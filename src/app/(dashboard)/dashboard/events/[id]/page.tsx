@@ -11,8 +11,8 @@ type Event = {
   id: number;
   name: string;
   location: string;
-  start: string;
-  end: string;
+  startdate: string;
+  enddate: string;
   active: boolean;
 };
 

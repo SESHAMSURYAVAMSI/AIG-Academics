@@ -17,36 +17,51 @@ const menuItems = [
   { name: "Contact", path: "contact" },
 ];
 
-export default function EventLayout({ children }: { children: React.ReactNode }) {
+export default function EventLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { id } = useParams();
   const router = useRouter();
   const pathname = usePathname();
 
+  // ✅ Back handler with fallback
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/dashboard/events"); // fallback route
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      
       {/* SIDEBAR */}
       <div className="w-64 bg-white border-r p-4">
-        <h2 className="text-xl font-semibold mb-6">
-          Manage Event
-        </h2>
+        {/* 🔙 BACK BUTTON */}
+        <button
+          onClick={handleBack}
+          className="mb-4 px-3 py-2 rounded-lg bg-gray-100 hover:bg-indigo-100 text-sm flex items-center gap-2 transition"
+        >
+          ← Back to Events
+        </button>
+
+        <h2 className="text-xl font-semibold mb-6">Manage Event</h2>
 
         <div className="space-y-2">
           {menuItems.map((item) => {
             const fullPath = `/dashboard/events/${id}/${item.path}`;
             const active =
               pathname === fullPath ||
-              (item.path === "" &&
-                pathname === `/dashboard/events/${id}`);
+              (item.path === "" && pathname === `/dashboard/events/${id}`);
 
             return (
               <div
                 key={item.name}
                 onClick={() => router.push(fullPath)}
                 className={`p-3 rounded-lg cursor-pointer transition ${
-                  active
-                    ? "bg-indigo-100 text-indigo-600"
-                    : "hover:bg-gray-100"
+                  active ? "bg-indigo-100 text-indigo-600" : "hover:bg-gray-100"
                 }`}
               >
                 {item.name}
@@ -57,9 +72,7 @@ export default function EventLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 p-6">
-        {children}
-      </div>
+      <div className="flex-1 p-6">{children}</div>
     </div>
   );
 }
