@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DropdownMenu,
@@ -22,6 +23,11 @@ type Type = {
 };
 
 export default function ExhibitorType() {
+  const params = useParams();
+  const id = params?.id as string;
+
+  const storageKey = `exhibitorTypes_${id}`;
+
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -33,17 +39,21 @@ export default function ExhibitorType() {
 
   // LOAD
   useEffect(() => {
-    const stored = localStorage.getItem("exhibitorTypes_${id}");
+    if (!id) return;
+
+    const stored = localStorage.getItem(storageKey);
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (stored) setTypes(JSON.parse(stored));
-  }, []);
+    else setTypes([]);
+  }, [id]);
 
+  // SAVE
   const saveData = (data: Type[]) => {
     setTypes(data);
-    localStorage.setItem("exhibitorTypes_${id}", JSON.stringify(data));
+    localStorage.setItem(storageKey, JSON.stringify(data));
   };
 
-  // ADD / UPDATE
   const handleSubmit = () => {
     if (!form.name) return;
 
@@ -53,11 +63,10 @@ export default function ExhibitorType() {
       );
       saveData(updated);
     } else {
-      const newType: Type = {
-        id: Date.now(),
-        ...form,
-      };
-      saveData([...types, newType]);
+      saveData([
+        ...types,
+        { id: Date.now(), ...form },
+      ]);
     }
 
     setForm({ name: "", active: true });
@@ -65,12 +74,10 @@ export default function ExhibitorType() {
     setOpen(false);
   };
 
-  // DELETE
   const handleDelete = (id: number) => {
     saveData(types.filter((t) => t.id !== id));
   };
 
-  // EDIT
   const handleEdit = (t: Type) => {
     setForm({ name: t.name, active: t.active });
     setEditingId(t.id);

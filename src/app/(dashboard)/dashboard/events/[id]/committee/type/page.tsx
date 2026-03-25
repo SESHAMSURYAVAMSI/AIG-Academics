@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DropdownMenu,
@@ -22,30 +23,40 @@ type Type = {
 };
 
 export default function CommitteeType() {
+  const params = useParams();
+  const id = params?.id as string;
+
+  const storageKey = `committeeTypes_${id}`;
+
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
     active: true,
   });
 
-  const [editingId, setEditingId] = useState<number | null>(null);
-
   // LOAD
   useEffect(() => {
-    const stored = localStorage.getItem("committeeTypes_${id}");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setTypes(JSON.parse(stored));
-  }, []);
+    if (!id) return;
+
+    const stored = localStorage.getItem(storageKey);
+
+    if (stored) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTypes(JSON.parse(stored));
+    } else {
+      setTypes([]);
+    }
+  }, [id]);
 
   // SAVE
   const saveToStorage = (data: Type[]) => {
     setTypes(data);
-    localStorage.setItem("committeeTypes_${id}", JSON.stringify(data));
+    localStorage.setItem(storageKey, JSON.stringify(data));
   };
 
-  // ADD / UPDATE
   const handleSubmit = () => {
     if (!form.name) return;
 
@@ -55,29 +66,24 @@ export default function CommitteeType() {
       );
       saveToStorage(updated);
     } else {
-      const newType: Type = {
-        id: Date.now(),
-        ...form,
-      };
-      saveToStorage([...types, newType]);
+      saveToStorage([
+        ...types,
+        { id: Date.now(), ...form },
+      ]);
     }
 
-    // reset
     setForm({ name: "", active: true });
     setEditingId(null);
     setOpen(false);
   };
 
-  // DELETE
   const handleDelete = (id: number) => {
-    const updated = types.filter((t) => t.id !== id);
-    saveToStorage(updated);
+    saveToStorage(types.filter((t) => t.id !== id));
   };
 
-  // EDIT
-  const handleEdit = (type: Type) => {
-    setForm({ name: type.name, active: type.active });
-    setEditingId(type.id);
+  const handleEdit = (t: Type) => {
+    setForm({ name: t.name, active: t.active });
+    setEditingId(t.id);
     setOpen(true);
   };
 

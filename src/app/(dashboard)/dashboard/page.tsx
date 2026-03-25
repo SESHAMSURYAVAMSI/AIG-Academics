@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 import EventForm from "@/components/forms/EventForm";
 
@@ -32,8 +33,15 @@ type EventType = {
 export default function Dashboard() {
   const router = useRouter();
 
-  const [events, setEvents] = useState<EventType[]>([]);
+  /* LOAD DATA (NO useEffect ⚡) */
+  const [events, setEvents] = useState<EventType[]>(() => {
+    if (typeof window === "undefined") return [];
+    const stored = localStorage.getItem("events");
+    return stored ? (JSON.parse(stored) as EventType[]) : [];
+  });
+
   const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -44,21 +52,12 @@ export default function Dashboard() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
 
-  /* LOAD */
-useEffect(() => {
-  const stored = localStorage.getItem("events");
-  if (stored) {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEvents(JSON.parse(stored) as EventType[]);
-  }
-}, []);
-
   const saveData = (data: EventType[]) => {
     setEvents(data);
     localStorage.setItem("events", JSON.stringify(data));
   };
 
-  /* ADD */
+  /* ADD EVENT */
   const handleAddEvent = () => {
     const newEvent: EventType = {
       id: Date.now(),
@@ -78,25 +77,33 @@ useEffect(() => {
   };
 
   /* DELETE */
-  const handleDelete = (id: number) => {
-    const updated = events.filter((e) => e.id !== id);
+  const confirmDelete = () => {
+    if (deleteId === null) return;
+    const updated = events.filter((e) => e.id !== deleteId);
     saveData(updated);
+    setDeleteId(null);
   };
 
-  /* UI */
+  /* ================= UI ================= */
+
   return (
     <div className="min-h-screen bg-gray-50 p-8 text-gray-900">
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold">Events</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Events Dashboard
+        </h1>
 
-        <Button onClick={() => setOpen(true)}>
+        <Button
+          onClick={() => setOpen(true)}
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:scale-105 transition"
+        >
           + Add Event
         </Button>
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -112,13 +119,16 @@ useEffect(() => {
           <tbody>
             {events.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center p-6 text-gray-400">
+                <td colSpan={6} className="text-center p-8 text-gray-400">
                   No events created yet
                 </td>
               </tr>
             ) : (
               events.map((event) => (
-                <tr key={event.id} className="border-t hover:bg-gray-50">
+                <tr
+                  key={event.id}
+                  className="border-t hover:bg-gray-50 transition"
+                >
                   <td className="p-4 font-medium">{event.name}</td>
                   <td className="p-4">{event.location}</td>
 
@@ -135,7 +145,13 @@ useEffect(() => {
                   </td>
 
                   <td className="p-4">
-                    <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-600">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full ${
+                        event.active
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
                       {event.active ? "Active" : "Inactive"}
                     </span>
                   </td>
@@ -156,7 +172,7 @@ useEffect(() => {
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-                          onClick={() => handleDelete(event.id)}
+                          onClick={() => setDeleteId(event.id)}
                           className="text-red-500"
                         >
                           Delete
@@ -183,6 +199,64 @@ useEffect(() => {
         setEndDate={setEndDate}
         handleSubmit={handleAddEvent}
       />
+
+      {/* 🔥 PREMIUM DELETE MODAL */}
+      <AnimatePresence>
+        {deleteId !== null && (
+          <>
+            {/* BACKDROP */}
+            <motion.div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDeleteId(null)}
+            />
+
+            {/* MODAL */}
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                initial={{ scale: 0.85, y: 50, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.85, y: 50, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="bg-white rounded-2xl shadow-2xl w-[380px] p-6 space-y-5"
+              >
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    Are you sure to Delete Event?
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    This action cannot be undone.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteId(null)}
+                    className="hover:scale-105 transition"
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    onClick={confirmDelete}
+                    className="bg-red-600 hover:bg-red-700 text-white hover:scale-105 transition"
+                  >
+                    Yes, Delete
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

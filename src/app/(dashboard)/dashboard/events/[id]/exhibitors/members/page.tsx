@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,6 +31,12 @@ type Type = {
 };
 
 export default function ExhibitorMembers() {
+  const params = useParams();
+  const id = params?.id as string;
+
+  const memberKey = `exhibitorMembers_${id}`;
+  const typeKey = `exhibitorTypes_${id}`;
+
   const [members, setMembers] = useState<Member[]>([]);
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
@@ -42,20 +50,24 @@ export default function ExhibitorMembers() {
 
   // LOAD
   useEffect(() => {
-    const storedMembers = localStorage.getItem("exhibitorMembers_${id}");
-    const storedTypes = localStorage.getItem("exhibitorTypes_${id}");
+    if (!id) return;
+
+    const storedMembers = localStorage.getItem(memberKey);
+    const storedTypes = localStorage.getItem(typeKey);
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (storedMembers) setMembers(JSON.parse(storedMembers));
+    else setMembers([]);
+    
     if (storedTypes) setTypes(JSON.parse(storedTypes));
-  }, []);
+    else setTypes([]);
+  }, [id]);
 
   const saveData = (data: Member[]) => {
     setMembers(data);
-    localStorage.setItem("exhibitorMembers_${id}", JSON.stringify(data));
+    localStorage.setItem(memberKey, JSON.stringify(data));
   };
 
-  // ADD / UPDATE
   const handleSubmit = () => {
     if (!form.name || !form.type) return;
 
@@ -65,11 +77,10 @@ export default function ExhibitorMembers() {
       );
       saveData(updated);
     } else {
-      const newMember: Member = {
-        id: Date.now(),
-        ...form,
-      };
-      saveData([...members, newMember]);
+      saveData([
+        ...members,
+        { id: Date.now(), ...form },
+      ]);
     }
 
     setForm({ name: "", type: "", active: true });
@@ -77,12 +88,10 @@ export default function ExhibitorMembers() {
     setOpen(false);
   };
 
-  // DELETE
   const handleDelete = (id: number) => {
     saveData(members.filter((m) => m.id !== id));
   };
 
-  // EDIT
   const handleEdit = (m: Member) => {
     setForm({
       name: m.name,
@@ -92,6 +101,7 @@ export default function ExhibitorMembers() {
     setEditingId(m.id);
     setOpen(true);
   };
+
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">

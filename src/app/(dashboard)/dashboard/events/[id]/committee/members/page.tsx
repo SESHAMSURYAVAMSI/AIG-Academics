@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,9 +31,16 @@ type Type = {
 };
 
 export default function CommitteeMembers() {
+  const params = useParams();
+  const id = params?.id as string;
+
+  const memberKey = `members_${id}`;
+  const typeKey = `committeeTypes_${id}`;
+
   const [members, setMembers] = useState<Member[]>([]);
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -39,21 +48,24 @@ export default function CommitteeMembers() {
     active: true,
   });
 
-  const [editingId, setEditingId] = useState<number | null>(null);
-
-  // LOAD DATA
+  // LOAD
   useEffect(() => {
-    const storedMembers = localStorage.getItem("members_${id}");
-    const storedTypes = localStorage.getItem("committeeTypes_${id}");
+    if (!id) return;
+
+    const storedMembers = localStorage.getItem(memberKey);
+    const storedTypes = localStorage.getItem(typeKey);
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (storedMembers) setMembers(JSON.parse(storedMembers));
+    else setMembers([]);
+
     if (storedTypes) setTypes(JSON.parse(storedTypes));
-  }, []);
+    else setTypes([]);
+  }, [id]);
 
   const saveMembers = (data: Member[]) => {
     setMembers(data);
-    localStorage.setItem("members_${id}", JSON.stringify(data));
+    localStorage.setItem(memberKey, JSON.stringify(data));
   };
 
   // ADD / UPDATE
@@ -66,11 +78,10 @@ export default function CommitteeMembers() {
       );
       saveMembers(updated);
     } else {
-      const newMember: Member = {
-        id: Date.now(),
-        ...form,
-      };
-      saveMembers([...members, newMember]);
+      saveMembers([
+        ...members,
+        { id: Date.now(), ...form },
+      ]);
     }
 
     setForm({ name: "", type: "", active: true });
@@ -78,20 +89,17 @@ export default function CommitteeMembers() {
     setOpen(false);
   };
 
-  // DELETE
   const handleDelete = (id: number) => {
-    const updated = members.filter((m) => m.id !== id);
-    saveMembers(updated);
+    saveMembers(members.filter((m) => m.id !== id));
   };
 
-  // EDIT
-  const handleEdit = (member: Member) => {
+  const handleEdit = (m: Member) => {
     setForm({
-      name: member.name,
-      type: member.type,
-      active: member.active,
+      name: m.name,
+      type: m.type,
+      active: m.active,
     });
-    setEditingId(member.id);
+    setEditingId(m.id);
     setOpen(true);
   };
 
