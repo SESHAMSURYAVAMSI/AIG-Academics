@@ -1,21 +1,28 @@
-import { useRouter } from "next/navigation";
-import API from "@/lib/api";
+"use client";
 
-export const useAuth = () => {
+import { useRouter } from "next/navigation";
+
+export function useAuth() {
   const router = useRouter();
 
   const login = async (data: { email: string; password: string }) => {
-    try {
-      const res = await API.post("/auth/login", data);
+    
+    // 🔥 MOCK LOGIN CHECK
+    if (data.email === "admin@test.com" && data.password === "123456") {
+      
+      // store fake user
+      localStorage.setItem("user", JSON.stringify({ email: data.email }));
 
-      localStorage.setItem("token", res.data.token);
-
-      router.push("/dashboard");
-    } catch (err) {
-      console.error(err);
-      throw err;
+      return true;
     }
+
+    throw new Error("Invalid credentials");
   };
 
-  return { login };
-};
+  const logout = () => {
+    localStorage.removeItem("user");
+    router.push("/");
+  };
+
+  return { login, logout };
+}
