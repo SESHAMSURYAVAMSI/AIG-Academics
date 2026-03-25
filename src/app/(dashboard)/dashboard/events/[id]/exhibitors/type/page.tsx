@@ -21,28 +21,26 @@ type Type = {
   active: boolean;
 };
 
-export default function CommitteeType() {
+export default function ExhibitorType() {
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
     active: true,
   });
 
-  const [editingId, setEditingId] = useState<number | null>(null);
-
   // LOAD
   useEffect(() => {
-    const stored = localStorage.getItem("committeeTypes_${id}");
+    const stored = localStorage.getItem("exhibitorTypes_${id}");
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (stored) setTypes(JSON.parse(stored));
   }, []);
 
-  // SAVE
-  const saveToStorage = (data: Type[]) => {
+  const saveData = (data: Type[]) => {
     setTypes(data);
-    localStorage.setItem("committeeTypes_${id}", JSON.stringify(data));
+    localStorage.setItem("exhibitorTypes_${id}", JSON.stringify(data));
   };
 
   // ADD / UPDATE
@@ -53,16 +51,15 @@ export default function CommitteeType() {
       const updated = types.map((t) =>
         t.id === editingId ? { ...t, ...form } : t
       );
-      saveToStorage(updated);
+      saveData(updated);
     } else {
       const newType: Type = {
         id: Date.now(),
         ...form,
       };
-      saveToStorage([...types, newType]);
+      saveData([...types, newType]);
     }
 
-    // reset
     setForm({ name: "", active: true });
     setEditingId(null);
     setOpen(false);
@@ -70,14 +67,13 @@ export default function CommitteeType() {
 
   // DELETE
   const handleDelete = (id: number) => {
-    const updated = types.filter((t) => t.id !== id);
-    saveToStorage(updated);
+    saveData(types.filter((t) => t.id !== id));
   };
 
   // EDIT
-  const handleEdit = (type: Type) => {
-    setForm({ name: type.name, active: type.active });
-    setEditingId(type.id);
+  const handleEdit = (t: Type) => {
+    setForm({ name: t.name, active: t.active });
+    setEditingId(t.id);
     setOpen(true);
   };
 
@@ -86,11 +82,8 @@ export default function CommitteeType() {
       
       {/* HEADER */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Committee Types</h1>
-
-        <Button onClick={() => setOpen(true)}>
-          + Add Type
-        </Button>
+        <h1 className="text-2xl font-semibold">Exhibitor Types</h1>
+        <Button onClick={() => setOpen(true)}>+ Add Type</Button>
       </div>
 
       {/* TABLE */}
@@ -135,9 +128,7 @@ export default function CommitteeType() {
                       </DropdownMenuTrigger>
 
                       <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => handleEdit(t)}
-                        >
+                        <DropdownMenuItem onClick={() => handleEdit(t)}>
                           Edit
                         </DropdownMenuItem>
 
@@ -161,32 +152,24 @@ export default function CommitteeType() {
       <AnimatePresence>
         {open && (
           <>
-            {/* OVERLAY */}
             <motion.div
               className="fixed inset-0 bg-black/30"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
             />
 
-            {/* DRAWER */}
             <motion.div
-              className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl z-50"
+              className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ duration: 0.4 }}
             >
               <h2 className="text-xl font-semibold mb-6">
                 {editingId ? "Edit Type" : "Add Type"}
               </h2>
 
               <div className="space-y-5">
-                
-                {/* NAME */}
                 <div>
-                  <Label>Committee Type</Label>
+                  <Label>Exhibitor Type</Label>
                   <Input
                     value={form.name}
                     onChange={(e) =>
@@ -195,8 +178,7 @@ export default function CommitteeType() {
                   />
                 </div>
 
-                {/* STATUS */}
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between items-center">
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
@@ -206,11 +188,7 @@ export default function CommitteeType() {
                   />
                 </div>
 
-                {/* BUTTON */}
-                <Button
-                  onClick={handleSubmit}
-                  className="w-full"
-                >
+                <Button onClick={handleSubmit} className="w-full">
                   {editingId ? "Update" : "Create"}
                 </Button>
               </div>

@@ -43,16 +43,17 @@ export default function CommitteeMembers() {
 
   // LOAD DATA
   useEffect(() => {
-    const storedMembers = localStorage.getItem("members");
-    const storedTypes = localStorage.getItem("committeeTypes");
+    const storedMembers = localStorage.getItem("members_${id}");
+    const storedTypes = localStorage.getItem("committeeTypes_${id}");
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (storedMembers) setMembers(JSON.parse(storedMembers));
     if (storedTypes) setTypes(JSON.parse(storedTypes));
   }, []);
 
   const saveMembers = (data: Member[]) => {
     setMembers(data);
-    localStorage.setItem("members", JSON.stringify(data));
+    localStorage.setItem("members_${id}", JSON.stringify(data));
   };
 
   // ADD / UPDATE

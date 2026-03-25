@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import SpeakerForm from "@/components/forms/SpeakerForm";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,11 +10,10 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { MoreVertical } from "lucide-react";
+
+/* ================= TYPES ================= */
 
 type Speaker = {
   id: number;
@@ -22,6 +22,8 @@ type Speaker = {
   location: string;
   active: boolean;
 };
+
+/* ================= COMPONENT ================= */
 
 export default function SpeakerPage() {
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
@@ -35,18 +37,23 @@ export default function SpeakerPage() {
     active: true,
   });
 
-  // LOAD
+  /* ================= LOAD ================= */
+
   useEffect(() => {
-    const stored = localStorage.getItem("speakers");
-    if (stored) setSpeakers(JSON.parse(stored));
+    const stored = localStorage.getItem("speakers_${id}");
+    if (stored) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSpeakers(JSON.parse(stored) as Speaker[]);
+    }
   }, []);
 
   const saveData = (data: Speaker[]) => {
     setSpeakers(data);
-    localStorage.setItem("speakers", JSON.stringify(data));
+    localStorage.setItem("speakers_${id}", JSON.stringify(data));
   };
 
-  // ADD / UPDATE
+  /* ================= ADD / UPDATE ================= */
+
   const handleSubmit = () => {
     if (!form.name || !form.type) return;
 
@@ -68,13 +75,15 @@ export default function SpeakerPage() {
     setOpen(false);
   };
 
-  // DELETE
+  /* ================= DELETE ================= */
+
   const handleDelete = (id: number) => {
     const updated = speakers.filter((s) => s.id !== id);
     saveData(updated);
   };
 
-  // EDIT
+  /* ================= EDIT ================= */
+
   const handleEdit = (speaker: Speaker) => {
     setForm({
       name: speaker.name,
@@ -86,9 +95,10 @@ export default function SpeakerPage() {
     setOpen(true);
   };
 
+  /* ================= UI ================= */
+
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Speakers</h1>
@@ -144,9 +154,7 @@ export default function SpeakerPage() {
                       </DropdownMenuTrigger>
 
                       <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => handleEdit(s)}
-                        >
+                        <DropdownMenuItem onClick={() => handleEdit(s)}>
                           Edit
                         </DropdownMenuItem>
 
@@ -166,90 +174,15 @@ export default function SpeakerPage() {
         </table>
       </div>
 
-      {/* DRAWER */}
-      <AnimatePresence>
-        {open && (
-          <>
-            {/* OVERLAY */}
-            <motion.div
-              className="fixed inset-0 bg-black/30"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setOpen(false)}
-            />
-
-            {/* DRAWER */}
-            <motion.div
-              className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl z-50"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-            >
-              <h2 className="text-xl font-semibold mb-6">
-                {editingId ? "Edit Speaker" : "Add Speaker"}
-              </h2>
-
-              <div className="space-y-5">
-                
-                {/* NAME */}
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
-                  />
-                </div>
-
-                {/* TYPE */}
-                <div>
-                  <Label>Speaker Type</Label>
-                  <select
-                    className="w-full border rounded-md p-2"
-                    value={form.type}
-                    onChange={(e) =>
-                      setForm({ ...form, type: e.target.value })
-                    }
-                  >
-                    <option value="">Select Type</option>
-                    <option value="National">National</option>
-                    <option value="International">International</option>
-                  </select>
-                </div>
-
-                {/* LOCATION */}
-                <div>
-                  <Label>Location</Label>
-                  <Input
-                    value={form.location}
-                    onChange={(e) =>
-                      setForm({ ...form, location: e.target.value })
-                    }
-                  />
-                </div>
-
-                {/* STATUS */}
-                <div className="flex items-center justify-between">
-                  <Label>Status</Label>
-                  <Switch
-                    checked={form.active}
-                    onCheckedChange={(val) =>
-                      setForm({ ...form, active: val })
-                    }
-                  />
-                </div>
-
-                {/* BUTTON */}
-                <Button onClick={handleSubmit} className="w-full">
-                  {editingId ? "Update" : "Create"}
-                </Button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* FORM */}
+      <SpeakerForm
+        open={open}
+        setOpen={setOpen}
+        form={form}
+        setForm={setForm}
+        handleSubmit={handleSubmit}
+        editingId={editingId}
+      />
     </div>
   );
 }

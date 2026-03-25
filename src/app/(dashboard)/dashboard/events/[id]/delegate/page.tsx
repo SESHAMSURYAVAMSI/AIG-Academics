@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Papa from "papaparse";
+import DelegateForm from "@/components/forms/DelegateForm";
 
 import {
   DropdownMenu,
@@ -11,11 +11,10 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { MoreVertical, Upload } from "lucide-react";
+
+/* ================= TYPES ================= */
 
 type Delegate = {
   id: number;
@@ -24,6 +23,14 @@ type Delegate = {
   email: string;
   active: boolean;
 };
+
+type CSVRow = {
+  name?: string;
+  designation?: string;
+  email?: string;
+};
+
+/* ================= COMPONENT ================= */
 
 export default function DelegatePage() {
   const [delegates, setDelegates] = useState<Delegate[]>([]);
@@ -37,25 +44,29 @@ export default function DelegatePage() {
     active: true,
   });
 
-  // LOAD
+  /* ================= LOAD ================= */
+
   useEffect(() => {
-    const stored = localStorage.getItem("delegates");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setDelegates(JSON.parse(stored));
+    const stored = localStorage.getItem("delegates_${id}");
+    if (stored) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDelegates(JSON.parse(stored) as Delegate[]);
+    }
   }, []);
 
   const saveData = (data: Delegate[]) => {
     setDelegates(data);
-    localStorage.setItem("delegates", JSON.stringify(data));
+    localStorage.setItem("delegates_${id}", JSON.stringify(data));
   };
 
-  // ADD / UPDATE
+  /* ================= ADD / UPDATE ================= */
+
   const handleSubmit = () => {
     if (!form.name || !form.email) return;
 
     if (editingId) {
       const updated = delegates.map((d) =>
-        d.id === editingId ? { ...d, ...form } : d,
+        d.id === editingId ? { ...d, ...form } : d
       );
       saveData(updated);
     } else {
@@ -71,13 +82,15 @@ export default function DelegatePage() {
     setOpen(false);
   };
 
-  // DELETE
+  /* ================= DELETE ================= */
+
   const handleDelete = (id: number) => {
     const updated = delegates.filter((d) => d.id !== id);
     saveData(updated);
   };
 
-  // EDIT
+  /* ================= EDIT ================= */
+
   const handleEdit = (d: Delegate) => {
     setForm({
       name: d.name,
@@ -89,13 +102,14 @@ export default function DelegatePage() {
     setOpen(true);
   };
 
-  // 📂 CSV UPLOAD
+  /* ================= CSV UPLOAD ================= */
+
   const handleCSVUpload = (file: File) => {
-    Papa.parse(file, {
+    Papa.parse<CSVRow>(file, {
       header: true,
       skipEmptyLines: true,
-      complete: (results: any) => {
-        const parsedData = results.data.map((row: any) => ({
+      complete: (results) => {
+        const parsedData: Delegate[] = results.data.map((row) => ({
           id: Date.now() + Math.random(),
           name: row.name || "",
           designation: row.designation || "",
@@ -103,11 +117,12 @@ export default function DelegatePage() {
           active: true,
         }));
 
-        const updated = [...delegates, ...parsedData];
-        saveData(updated);
+        saveData([...delegates, ...parsedData]);
       },
     });
   };
+
+  /* ================= UI ================= */
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
@@ -117,16 +132,6 @@ export default function DelegatePage() {
 
         <div className="flex gap-3">
           <Button onClick={() => setOpen(true)}>+ Add Delegate</Button>
-          {/* 🔥 ADD THIS */}
-          {/* <Button
-    variant="destructive"
-    onClick={() => {
-      localStorage.removeItem("delegates");
-      setDelegates([]);
-    }}
-  >
-    Clear All
-  </Button> */}
 
           <label className="flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-md bg-white hover:bg-gray-100">
             <Upload size={16} />
@@ -211,70 +216,15 @@ export default function DelegatePage() {
         </table>
       </div>
 
-      {/* DRAWER */}
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/30"
-              onClick={() => setOpen(false)}
-            />
-
-            <motion.div
-              className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-            >
-              <h2 className="text-xl font-semibold mb-6">
-                {editingId ? "Edit Delegate" : "Add Delegate"}
-              </h2>
-
-              <div className="space-y-5">
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <Label>Designation</Label>
-                  <Input
-                    value={form.designation}
-                    onChange={(e) =>
-                      setForm({ ...form, designation: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <Label>Email</Label>
-                  <Input
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <Label>Status</Label>
-                  <Switch
-                    checked={form.active}
-                    onCheckedChange={(val) => setForm({ ...form, active: val })}
-                  />
-                </div>
-
-                <Button onClick={handleSubmit} className="w-full">
-                  {editingId ? "Update" : "Create"}
-                </Button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* FORM */}
+      <DelegateForm
+        open={open}
+        setOpen={setOpen}
+        form={form}
+        setForm={setForm}
+        handleSubmit={handleSubmit}
+        editingId={editingId}
+      />
     </div>
   );
 }

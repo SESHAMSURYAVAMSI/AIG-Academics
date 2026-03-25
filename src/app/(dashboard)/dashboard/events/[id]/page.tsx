@@ -7,54 +7,70 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
-type Event = {
+/* ================= TYPES ================= */
+
+type EventType = {
   id: number;
   name: string;
   location: string;
-  startdate: string;
-  enddate: string;
+  start: string;
+  end: string;
   active: boolean;
 };
 
-export default function EventInfoPage() {
-  const { id } = useParams();
-  const [event, setEvent] = useState<Event | null>(null);
+/* ================= COMPONENT ================= */
 
-  // LOAD EVENT
+export default function EventInfoPage() {
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+
+  const [event, setEvent] = useState<EventType | null>(null);
+
+  /* LOAD EVENT */
   useEffect(() => {
     const stored = localStorage.getItem("events");
     if (!stored) return;
 
-    const events: Event[] = JSON.parse(stored);
+    const events: EventType[] = JSON.parse(stored);
     const found = events.find((e) => e.id === Number(id));
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (found) setEvent(found);
   }, [id]);
 
-  // UPDATE FIELD
-  const handleChange = (key: keyof Event, value: any) => {
-    if (!event) return;
-    setEvent({ ...event, [key]: value });
+  /* UPDATE FIELD (NO ANY ✅) */
+  const handleChange = <K extends keyof EventType>(
+    key: K,
+    value: EventType[K]
+  ) => {
+    setEvent((prev) => {
+      if (!prev) return prev;
+      return { ...prev, [key]: value };
+    });
   };
 
-  // SAVE UPDATE
+  /* SAVE */
   const handleSave = () => {
     const stored = localStorage.getItem("events");
     if (!stored || !event) return;
 
-    let events: Event[] = JSON.parse(stored);
+    const events: EventType[] = JSON.parse(stored);
 
-    events = events.map((e) => (e.id === event.id ? event : e));
+    const updated = events.map((e) =>
+      e.id === event.id ? event : e
+    );
 
-    localStorage.setItem("events", JSON.stringify(events));
+    localStorage.setItem("events", JSON.stringify(updated));
 
     alert("Event updated ✅");
   };
 
+  /* LOADING */
   if (!event) {
     return <p>Loading...</p>;
   }
 
+  /* UI */
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="text-2xl font-semibold">Event Info</h1>
@@ -95,7 +111,7 @@ export default function EventInfoPage() {
         />
       </div>
 
-      {/* 🔥 STATUS TOGGLE */}
+      {/* STATUS */}
       <div className="flex items-center justify-between">
         <Label>Status</Label>
 
@@ -115,7 +131,7 @@ export default function EventInfoPage() {
         </div>
       </div>
 
-      {/* SAVE BUTTON */}
+      {/* SAVE */}
       <Button onClick={handleSave}>Save Changes</Button>
     </div>
   );
