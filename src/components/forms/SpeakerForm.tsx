@@ -10,6 +10,7 @@ type FormType = {
   name: string;
   type: string;
   location: string;
+  description: string; // ✅ NEW FIELD
   active: boolean;
 };
 
@@ -52,6 +53,7 @@ export default function SpeakerForm({
             </h2>
 
             <div className="space-y-5">
+              
               {/* NAME */}
               <div>
                 <Label>Name</Label>
@@ -86,6 +88,20 @@ export default function SpeakerForm({
                   value={form.location}
                   onChange={(e) =>
                     setForm({ ...form, location: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* ✅ DESCRIPTION (NEW) */}
+              <div>
+                <Label>Description</Label>
+                <textarea
+                  className="w-full border rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Enter speaker description..."
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
                   }
                 />
               </div>

@@ -5,15 +5,8 @@ import { useParams } from "next/navigation";
 import Papa from "papaparse";
 import DelegateForm from "@/components/forms/DelegateForm";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 
 /* ================= TYPES ================= */
 
@@ -35,9 +28,9 @@ type CSVRow = {
 
 export default function DelegatePage() {
   const params = useParams();
-  const id = params?.id as string; // ✅ event id
+  const id = params?.id as string;
 
-  const storageKey = `delegates_${id}`; // ✅ dynamic key
+  const storageKey = `delegates_${id}`;
 
   const [delegates, setDelegates] = useState<Delegate[]>([]);
   const [open, setOpen] = useState(false);
@@ -50,30 +43,22 @@ export default function DelegatePage() {
     active: true,
   });
 
-  /* ================= LOAD ================= */
-
+  /* LOAD */
   useEffect(() => {
     if (!id) return;
 
     const stored = localStorage.getItem(storageKey);
-
-    if (stored) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDelegates(JSON.parse(stored));
-    } else {
-      setDelegates([]); // 🔥 prevent old data showing
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDelegates(stored ? JSON.parse(stored) : []);
   }, [id]);
 
-  /* ================= SAVE ================= */
-
+  /* SAVE */
   const saveData = (data: Delegate[]) => {
     setDelegates(data);
     localStorage.setItem(storageKey, JSON.stringify(data));
   };
 
-  /* ================= ADD / UPDATE ================= */
-
+  /* ADD / UPDATE */
   const handleSubmit = () => {
     if (!form.name || !form.email) return;
 
@@ -83,11 +68,7 @@ export default function DelegatePage() {
       );
       saveData(updated);
     } else {
-      const newDelegate: Delegate = {
-        id: Date.now(),
-        ...form,
-      };
-      saveData([...delegates, newDelegate]);
+      saveData([...delegates, { id: Date.now(), ...form }]);
     }
 
     setForm({ name: "", designation: "", email: "", active: true });
@@ -95,15 +76,13 @@ export default function DelegatePage() {
     setOpen(false);
   };
 
-  /* ================= DELETE ================= */
-
+  /* DELETE */
   const handleDelete = (id: number) => {
     const updated = delegates.filter((d) => d.id !== id);
     saveData(updated);
   };
 
-  /* ================= EDIT ================= */
-
+  /* EDIT */
   const handleEdit = (d: Delegate) => {
     setForm({
       name: d.name,
@@ -115,8 +94,7 @@ export default function DelegatePage() {
     setOpen(true);
   };
 
-  /* ================= CSV UPLOAD ================= */
-
+  /* CSV */
   const handleCSVUpload = (file: File) => {
     Papa.parse<CSVRow>(file, {
       header: true,
@@ -134,8 +112,6 @@ export default function DelegatePage() {
       },
     });
   };
-
-  /* ================= UI ================= */
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
@@ -169,13 +145,15 @@ export default function DelegatePage() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
+          
+          {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Name</th>
               <th className="p-4 text-left">Designation</th>
               <th className="p-4 text-left">Email</th>
               <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -189,6 +167,7 @@ export default function DelegatePage() {
             ) : (
               delegates.map((d) => (
                 <tr key={d.id} className="border-t hover:bg-gray-50">
+                  
                   <td className="p-4 font-medium">{d.name}</td>
                   <td className="p-4">{d.designation}</td>
                   <td className="p-4">{d.email}</td>
@@ -205,26 +184,29 @@ export default function DelegatePage() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="cursor-pointer" />
-                      </DropdownMenuTrigger>
+                  {/* ✅ FIXED ACTIONS */}
+                  <td className="p-4">
+                    <div className="flex justify-center items-center gap-6">
+                      
+                      {/* EDIT */}
+                      <button
+                        onClick={() => handleEdit(d)}
+                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                      >
+                        Edit
+                      </button>
 
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleEdit(d)}>
-                          Edit
-                        </DropdownMenuItem>
+                      {/* DELETE */}
+                      <button
+                        onClick={() => handleDelete(d.id)}
+                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                      >
+                        Delete
+                      </button>
 
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(d.id)}
-                          className="text-red-500"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    </div>
                   </td>
+
                 </tr>
               ))
             )}

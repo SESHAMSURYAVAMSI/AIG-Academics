@@ -3,18 +3,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { MoreVertical } from "lucide-react";
 
 type Type = {
   id: number;
@@ -31,24 +24,23 @@ export default function ExhibitorType() {
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
     active: true,
   });
 
-  // LOAD
+  /* LOAD */
   useEffect(() => {
     if (!id) return;
 
     const stored = localStorage.getItem(storageKey);
-
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setTypes(JSON.parse(stored));
-    else setTypes([]);
+    setTypes(stored ? JSON.parse(stored) : []);
   }, [id]);
 
-  // SAVE
+  /* SAVE */
   const saveData = (data: Type[]) => {
     setTypes(data);
     localStorage.setItem(storageKey, JSON.stringify(data));
@@ -63,10 +55,7 @@ export default function ExhibitorType() {
       );
       saveData(updated);
     } else {
-      saveData([
-        ...types,
-        { id: Date.now(), ...form },
-      ]);
+      saveData([...types, { id: Date.now(), ...form }]);
     }
 
     setForm({ name: "", active: true });
@@ -74,8 +63,13 @@ export default function ExhibitorType() {
     setOpen(false);
   };
 
-  const handleDelete = (id: number) => {
-    saveData(types.filter((t) => t.id !== id));
+  /* DELETE */
+  const confirmDelete = () => {
+    if (deleteId === null) return;
+
+    const updated = types.filter((t) => t.id !== deleteId);
+    saveData(updated);
+    setDeleteId(null);
   };
 
   const handleEdit = (t: Type) => {
@@ -86,7 +80,7 @@ export default function ExhibitorType() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      
+
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Exhibitor Types</h1>
@@ -96,11 +90,13 @@ export default function ExhibitorType() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
+
+          {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Type Name</th>
               <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -114,6 +110,7 @@ export default function ExhibitorType() {
             ) : (
               types.map((t) => (
                 <tr key={t.id} className="border-t hover:bg-gray-50">
+
                   <td className="p-4 font-medium">{t.name}</td>
 
                   <td className="p-4">
@@ -128,26 +125,29 @@ export default function ExhibitorType() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="cursor-pointer" />
-                      </DropdownMenuTrigger>
+                  {/* ✅ FIXED ACTIONS */}
+                  <td className="p-4">
+                    <div className="flex justify-center items-center gap-6">
 
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleEdit(t)}>
-                          Edit
-                        </DropdownMenuItem>
+                      {/* EDIT */}
+                      <button
+                        onClick={() => handleEdit(t)}
+                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                      >
+                        Edit
+                      </button>
 
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(t.id)}
-                          className="text-red-500"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      {/* DELETE */}
+                      <button
+                        onClick={() => setDeleteId(t.id)}
+                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                      >
+                        Delete
+                      </button>
+
+                    </div>
                   </td>
+
                 </tr>
               ))
             )}
@@ -162,10 +162,13 @@ export default function ExhibitorType() {
             <motion.div
               className="fixed inset-0 bg-black/30"
               onClick={() => setOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             />
 
             <motion.div
-              className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl"
+              className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl z-50"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -199,6 +202,46 @@ export default function ExhibitorType() {
                   {editingId ? "Update" : "Create"}
                 </Button>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* DELETE MODAL */}
+      <AnimatePresence>
+        {deleteId !== null && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              onClick={() => setDeleteId(null)}
+            />
+
+            <motion.div className="fixed inset-0 flex items-center justify-center z-50">
+              <motion.div className="bg-white rounded-2xl shadow-2xl w-[360px] p-6 space-y-4">
+                <h2 className="text-lg font-semibold">
+                  Are you sure to delete?
+                </h2>
+
+                <p className="text-sm text-gray-500">
+                  This action cannot be undone.
+                </p>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteId(null)}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    onClick={confirmDelete}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Yes, Delete
+                  </Button>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}

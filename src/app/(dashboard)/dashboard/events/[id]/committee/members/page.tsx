@@ -4,18 +4,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { MoreVertical } from "lucide-react";
 
 type Member = {
   id: number;
@@ -48,7 +40,7 @@ export default function CommitteeMembers() {
     active: true,
   });
 
-  // LOAD
+  /* LOAD */
   useEffect(() => {
     if (!id) return;
 
@@ -56,11 +48,8 @@ export default function CommitteeMembers() {
     const storedTypes = localStorage.getItem(typeKey);
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (storedMembers) setMembers(JSON.parse(storedMembers));
-    else setMembers([]);
-
-    if (storedTypes) setTypes(JSON.parse(storedTypes));
-    else setTypes([]);
+    setMembers(storedMembers ? JSON.parse(storedMembers) : []);
+    setTypes(storedTypes ? JSON.parse(storedTypes) : []);
   }, [id]);
 
   const saveMembers = (data: Member[]) => {
@@ -68,7 +57,7 @@ export default function CommitteeMembers() {
     localStorage.setItem(memberKey, JSON.stringify(data));
   };
 
-  // ADD / UPDATE
+  /* ADD / UPDATE */
   const handleSubmit = () => {
     if (!form.name || !form.type) return;
 
@@ -78,10 +67,7 @@ export default function CommitteeMembers() {
       );
       saveMembers(updated);
     } else {
-      saveMembers([
-        ...members,
-        { id: Date.now(), ...form },
-      ]);
+      saveMembers([...members, { id: Date.now(), ...form }]);
     }
 
     setForm({ name: "", type: "", active: true });
@@ -118,12 +104,14 @@ export default function CommitteeMembers() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
+          
+          {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Name</th>
               <th className="p-4 text-left">Type</th>
               <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -137,9 +125,11 @@ export default function CommitteeMembers() {
             ) : (
               members.map((m) => (
                 <tr key={m.id} className="border-t hover:bg-gray-50">
+                  
                   <td className="p-4 font-medium">{m.name}</td>
                   <td className="p-4">{m.type}</td>
 
+                  {/* STATUS */}
                   <td className="p-4">
                     <span
                       className={`px-3 py-1 text-xs rounded-full ${
@@ -152,28 +142,29 @@ export default function CommitteeMembers() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="cursor-pointer" />
-                      </DropdownMenuTrigger>
+                  {/* ✅ FIXED ACTIONS */}
+                  <td className="p-4">
+                    <div className="flex justify-center items-center gap-6">
+                      
+                      {/* EDIT */}
+                      <button
+                        onClick={() => handleEdit(m)}
+                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                      >
+                        Edit
+                      </button>
 
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => handleEdit(m)}
-                        >
-                          Edit
-                        </DropdownMenuItem>
+                      {/* DELETE */}
+                      <button
+                        onClick={() => handleDelete(m.id)}
+                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                      >
+                        Delete
+                      </button>
 
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(m.id)}
-                          className="text-red-500"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    </div>
                   </td>
+
                 </tr>
               ))
             )}
@@ -185,7 +176,6 @@ export default function CommitteeMembers() {
       <AnimatePresence>
         {open && (
           <>
-            {/* OVERLAY */}
             <motion.div
               className="fixed inset-0 bg-black/30"
               initial={{ opacity: 0 }}
@@ -194,13 +184,11 @@ export default function CommitteeMembers() {
               onClick={() => setOpen(false)}
             />
 
-            {/* DRAWER */}
             <motion.div
               className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl z-50"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ duration: 0.4 }}
             >
               <h2 className="text-xl font-semibold mb-6">
                 {editingId ? "Edit Member" : "Add Member"}
@@ -208,7 +196,6 @@ export default function CommitteeMembers() {
 
               <div className="space-y-5">
                 
-                {/* NAME */}
                 <div>
                   <Label>Name</Label>
                   <Input
@@ -219,7 +206,6 @@ export default function CommitteeMembers() {
                   />
                 </div>
 
-                {/* TYPE */}
                 <div>
                   <Label>Committee Type</Label>
                   <select
@@ -231,7 +217,7 @@ export default function CommitteeMembers() {
                   >
                     <option value="">Select Type</option>
                     {types
-                      .filter((t) => t.active) // only active types
+                      .filter((t) => t.active)
                       .map((t) => (
                         <option key={t.id} value={t.name}>
                           {t.name}
@@ -240,7 +226,6 @@ export default function CommitteeMembers() {
                   </select>
                 </div>
 
-                {/* STATUS */}
                 <div className="flex items-center justify-between">
                   <Label>Status</Label>
                   <Switch
@@ -251,7 +236,6 @@ export default function CommitteeMembers() {
                   />
                 </div>
 
-                {/* BUTTON */}
                 <Button onClick={handleSubmit} className="w-full">
                   {editingId ? "Update" : "Create"}
                 </Button>

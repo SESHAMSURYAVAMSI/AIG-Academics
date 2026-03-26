@@ -4,18 +4,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { MoreVertical } from "lucide-react";
 
 type Member = {
   id: number;
@@ -48,7 +40,7 @@ export default function ExhibitorMembers() {
     active: true,
   });
 
-  // LOAD
+  /* LOAD */
   useEffect(() => {
     if (!id) return;
 
@@ -56,11 +48,8 @@ export default function ExhibitorMembers() {
     const storedTypes = localStorage.getItem(typeKey);
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (storedMembers) setMembers(JSON.parse(storedMembers));
-    else setMembers([]);
-    
-    if (storedTypes) setTypes(JSON.parse(storedTypes));
-    else setTypes([]);
+    setMembers(storedMembers ? JSON.parse(storedMembers) : []);
+    setTypes(storedTypes ? JSON.parse(storedTypes) : []);
   }, [id]);
 
   const saveData = (data: Member[]) => {
@@ -77,10 +66,7 @@ export default function ExhibitorMembers() {
       );
       saveData(updated);
     } else {
-      saveData([
-        ...members,
-        { id: Date.now(), ...form },
-      ]);
+      saveData([...members, { id: Date.now(), ...form }]);
     }
 
     setForm({ name: "", type: "", active: true });
@@ -102,7 +88,6 @@ export default function ExhibitorMembers() {
     setOpen(true);
   };
 
-
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       
@@ -118,12 +103,14 @@ export default function ExhibitorMembers() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
+          
+          {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Name</th>
               <th className="p-4 text-left">Type</th>
               <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -137,6 +124,7 @@ export default function ExhibitorMembers() {
             ) : (
               members.map((m) => (
                 <tr key={m.id} className="border-t hover:bg-gray-50">
+                  
                   <td className="p-4 font-medium">{m.name}</td>
                   <td className="p-4">{m.type}</td>
 
@@ -152,26 +140,29 @@ export default function ExhibitorMembers() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="cursor-pointer" />
-                      </DropdownMenuTrigger>
+                  {/* ✅ FIXED ACTIONS */}
+                  <td className="p-4">
+                    <div className="flex justify-center items-center gap-6">
+                      
+                      {/* EDIT */}
+                      <button
+                        onClick={() => handleEdit(m)}
+                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                      >
+                        Edit
+                      </button>
 
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleEdit(m)}>
-                          Edit
-                        </DropdownMenuItem>
+                      {/* DELETE */}
+                      <button
+                        onClick={() => handleDelete(m.id)}
+                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                      >
+                        Delete
+                      </button>
 
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(m.id)}
-                          className="text-red-500"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    </div>
                   </td>
+
                 </tr>
               ))
             )}

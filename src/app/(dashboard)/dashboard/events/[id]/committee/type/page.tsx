@@ -3,18 +3,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { MoreVertical } from "lucide-react";
 
 type Type = {
   id: number;
@@ -31,18 +24,18 @@ export default function CommitteeType() {
   const [types, setTypes] = useState<Type[]>([]);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
     active: true,
   });
 
-  // LOAD
+  /* LOAD */
   useEffect(() => {
     if (!id) return;
 
     const stored = localStorage.getItem(storageKey);
-
     if (stored) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTypes(JSON.parse(stored));
@@ -51,7 +44,7 @@ export default function CommitteeType() {
     }
   }, [id]);
 
-  // SAVE
+  /* SAVE */
   const saveToStorage = (data: Type[]) => {
     setTypes(data);
     localStorage.setItem(storageKey, JSON.stringify(data));
@@ -66,10 +59,7 @@ export default function CommitteeType() {
       );
       saveToStorage(updated);
     } else {
-      saveToStorage([
-        ...types,
-        { id: Date.now(), ...form },
-      ]);
+      saveToStorage([...types, { id: Date.now(), ...form }]);
     }
 
     setForm({ name: "", active: true });
@@ -77,8 +67,13 @@ export default function CommitteeType() {
     setOpen(false);
   };
 
-  const handleDelete = (id: number) => {
-    saveToStorage(types.filter((t) => t.id !== id));
+  /* DELETE */
+  const confirmDelete = () => {
+    if (deleteId === null) return;
+
+    const updated = types.filter((t) => t.id !== deleteId);
+    saveToStorage(updated);
+    setDeleteId(null);
   };
 
   const handleEdit = (t: Type) => {
@@ -106,7 +101,7 @@ export default function CommitteeType() {
             <tr>
               <th className="p-4 text-left">Type Name</th>
               <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -119,7 +114,7 @@ export default function CommitteeType() {
               </tr>
             ) : (
               types.map((t) => (
-                <tr key={t.id} className="border-t hover:bg-gray-50">
+                <tr key={t.id} className="border-t hover:bg-gray-50 transition">
                   <td className="p-4 font-medium">{t.name}</td>
 
                   <td className="p-4">
@@ -134,28 +129,28 @@ export default function CommitteeType() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="cursor-pointer" />
-                      </DropdownMenuTrigger>
+                  {/* ✅ UPDATED ACTIONS */}
+<td className="p-4">
+  <div className="flex justify-center items-center gap-6">
+    
+    {/* EDIT */}
+    <button
+      onClick={() => handleEdit(t)}
+      className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+    >
+      Edit
+    </button>
 
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => handleEdit(t)}
-                        >
-                          Edit
-                        </DropdownMenuItem>
+    {/* DELETE */}
+    <button
+      onClick={() => setDeleteId(t.id)}
+      className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+    >
+      Delete
+    </button>
 
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(t.id)}
-                          className="text-red-500"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
+  </div>
+</td>
                 </tr>
               ))
             )}
@@ -167,7 +162,6 @@ export default function CommitteeType() {
       <AnimatePresence>
         {open && (
           <>
-            {/* OVERLAY */}
             <motion.div
               className="fixed inset-0 bg-black/30"
               initial={{ opacity: 0 }}
@@ -176,21 +170,17 @@ export default function CommitteeType() {
               onClick={() => setOpen(false)}
             />
 
-            {/* DRAWER */}
             <motion.div
               className="fixed top-0 right-0 w-[400px] h-full bg-white p-6 shadow-xl z-50"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ duration: 0.4 }}
             >
               <h2 className="text-xl font-semibold mb-6">
                 {editingId ? "Edit Type" : "Add Type"}
               </h2>
 
               <div className="space-y-5">
-                
-                {/* NAME */}
                 <div>
                   <Label>Committee Type</Label>
                   <Input
@@ -201,7 +191,6 @@ export default function CommitteeType() {
                   />
                 </div>
 
-                {/* STATUS */}
                 <div className="flex items-center justify-between">
                   <Label>Status</Label>
                   <Switch
@@ -212,14 +201,59 @@ export default function CommitteeType() {
                   />
                 </div>
 
-                {/* BUTTON */}
-                <Button
-                  onClick={handleSubmit}
-                  className="w-full"
-                >
+                <Button onClick={handleSubmit} className="w-full">
                   {editingId ? "Update" : "Create"}
                 </Button>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* DELETE MODAL */}
+      <AnimatePresence>
+        {deleteId !== null && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDeleteId(null)}
+            />
+
+            <motion.div className="fixed inset-0 flex items-center justify-center z-50">
+              <motion.div
+                initial={{ scale: 0.85, y: 40, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.85, y: 40, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="bg-white rounded-2xl shadow-2xl w-[360px] p-6 space-y-4"
+              >
+                <h2 className="text-lg font-semibold">
+                  Are you sure to delete?
+                </h2>
+
+                <p className="text-sm text-gray-500">
+                  This action cannot be undone.
+                </p>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteId(null)}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    onClick={confirmDelete}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Yes, Delete
+                  </Button>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
