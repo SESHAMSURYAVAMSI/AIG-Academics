@@ -2,19 +2,10 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 import EventForm from "@/components/forms/EventForm";
-
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-
 import { Button } from "@/components/ui/button";
 
 /* ================= TYPES ================= */
@@ -33,11 +24,10 @@ type EventType = {
 export default function Dashboard() {
   const router = useRouter();
 
-  /* LOAD DATA (NO useEffect ⚡) */
   const [events, setEvents] = useState<EventType[]>(() => {
     if (typeof window === "undefined") return [];
     const stored = localStorage.getItem("events");
-    return stored ? (JSON.parse(stored) as EventType[]) : [];
+    return stored ? JSON.parse(stored) : [];
   });
 
   const [open, setOpen] = useState(false);
@@ -57,7 +47,6 @@ export default function Dashboard() {
     localStorage.setItem("events", JSON.stringify(data));
   };
 
-  /* ADD EVENT */
   const handleAddEvent = () => {
     const newEvent: EventType = {
       id: Date.now(),
@@ -76,28 +65,22 @@ export default function Dashboard() {
     setOpen(false);
   };
 
-  /* DELETE */
   const confirmDelete = () => {
     if (deleteId === null) return;
-    const updated = events.filter((e) => e.id !== deleteId);
-    saveData(updated);
+    saveData(events.filter((e) => e.id !== deleteId));
     setDeleteId(null);
   };
 
-  /* ================= UI ================= */
-
   return (
     <div className="min-h-screen bg-gray-50 p-8 text-gray-900">
+      
       {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-semibold tracking-tight">
           Events Dashboard
         </h1>
 
-        <Button
-          onClick={() => setOpen(true)}
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:scale-105 transition"
-        >
+        <Button onClick={() => setOpen(true)}>
           + Add Event
         </Button>
       </div>
@@ -112,7 +95,7 @@ export default function Dashboard() {
               <th className="p-4 text-left">Start</th>
               <th className="p-4 text-left">End</th>
               <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -156,30 +139,37 @@ export default function Dashboard() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="cursor-pointer" />
-                      </DropdownMenuTrigger>
+                  {/* ✅ CLEAN ACTIONS */}
+                  <td className="p-4">
+<div className="flex justify-center items-center gap-3 group">
 
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            router.push(`/dashboard/events/${event.id}`)
-                          }
-                        >
-                          Manage Event
-                        </DropdownMenuItem>
+  {/* MANAGE */}
+  <button
+    onClick={() =>
+      router.push(`/dashboard/events/${event.id}`)
+    }
+    className="relative px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+    hover:bg-indigo-100 hover:border-indigo-400 hover:text-indigo-800 
+    transition-all duration-200 ease-in-out 
+    transform hover:scale-105 active:scale-95 shadow-sm"
+  >
+    Manage
+  </button>
 
-                        <DropdownMenuItem
-                          onClick={() => setDeleteId(event.id)}
-                          className="text-red-500"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+  {/* DELETE */}
+  <button
+    onClick={() => setDeleteId(event.id)}
+    className="relative px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+    hover:bg-red-100 hover:border-red-400 hover:text-red-800 
+    transition-all duration-200 ease-in-out 
+    transform hover:scale-105 active:scale-95 shadow-sm"
+  >
+    Delete
+  </button>
+
+</div>
                   </td>
+
                 </tr>
               ))
             )}
@@ -200,56 +190,35 @@ export default function Dashboard() {
         handleSubmit={handleAddEvent}
       />
 
-      {/* 🔥 PREMIUM DELETE MODAL */}
+      {/* DELETE MODAL */}
       <AnimatePresence>
         {deleteId !== null && (
           <>
-            {/* BACKDROP */}
             <motion.div
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               onClick={() => setDeleteId(null)}
             />
 
-            {/* MODAL */}
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                initial={{ scale: 0.85, y: 50, opacity: 0 }}
-                animate={{ scale: 1, y: 0, opacity: 1 }}
-                exit={{ scale: 0.85, y: 50, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="bg-white rounded-2xl shadow-2xl w-[380px] p-6 space-y-5"
-              >
-                <div>
-                  <h2 className="text-xl font-semibold">
-                    Are you sure to Delete Event?
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    This action cannot be undone.
-                  </p>
-                </div>
+            <motion.div className="fixed inset-0 flex items-center justify-center z-50">
+              <motion.div className="bg-white rounded-2xl shadow-2xl w-[360px] p-6 space-y-4">
+                <h2 className="text-lg font-semibold">
+                  Delete Event?
+                </h2>
+
+                <p className="text-sm text-gray-500">
+                  This action cannot be undone.
+                </p>
 
                 <div className="flex justify-end gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setDeleteId(null)}
-                    className="hover:scale-105 transition"
-                  >
+                  <Button variant="outline" onClick={() => setDeleteId(null)}>
                     Cancel
                   </Button>
 
                   <Button
                     onClick={confirmDelete}
-                    className="bg-red-600 hover:bg-red-700 text-white hover:scale-105 transition"
+                    className="bg-red-600 hover:bg-red-700 text-white"
                   >
-                    Yes, Delete
+                    Delete
                   </Button>
                 </div>
               </motion.div>

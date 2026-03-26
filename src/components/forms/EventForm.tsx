@@ -4,37 +4,38 @@ import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
-
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
 
+/* ================= TYPES ================= */
+
+type FormType = {
+  name: string;
+  location: string;
+  active: boolean;
+};
+
 type Props = {
   open: boolean;
   setOpen: (val: boolean) => void;
-  form: {
-    name: string;
-    location: string;
-    active: boolean;
-  };
-  setForm: (val: {
-    name: string;
-    location: string;
-    active: boolean;
-  }) => void;
+  form: FormType;
+  setForm: (val: FormType) => void;
   startDate: Date | undefined;
-  setStartDate: (date: Date | undefined) => void;
+  setStartDate: (val: Date | undefined) => void;
   endDate: Date | undefined;
-  setEndDate: (date: Date | undefined) => void;
+  setEndDate: (val: Date | undefined) => void;
   handleSubmit: () => void;
 };
+
+/* ================= COMPONENT ================= */
 
 export default function EventForm({
   open,
@@ -53,26 +54,31 @@ export default function EventForm({
         <>
           {/* OVERLAY */}
           <motion.div
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
           />
 
           {/* DRAWER */}
           <motion.div
-            className="fixed top-0 right-0 w-[420px] h-full bg-white p-6 shadow-xl"
+            className="fixed top-0 right-0 w-[420px] h-full bg-white z-50 p-6 shadow-2xl rounded-l-2xl"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
           >
-            <h2 className="text-2xl font-semibold mb-6">
+            <h2 className="text-xl font-semibold mb-6">
               Add Event
             </h2>
 
             <div className="space-y-5">
+              
               {/* NAME */}
               <div>
                 <Label>Event Name</Label>
                 <Input
+                  className="mt-2"
                   value={form.name}
                   onChange={(e) =>
                     setForm({ ...form, name: e.target.value })
@@ -84,6 +90,7 @@ export default function EventForm({
               <div>
                 <Label>Location</Label>
                 <Input
+                  className="mt-2"
                   value={form.location}
                   onChange={(e) =>
                     setForm({ ...form, location: e.target.value })
@@ -91,80 +98,64 @@ export default function EventForm({
                 />
               </div>
 
-              {/* START */}
-              <div className="space-y-2">
-                <Label>Start Date & Time</Label>
+              {/* START DATE */}
+              <div>
+                <Label>Start Date</Label>
 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                    <button className="w-full mt-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">
                       {startDate
-                        ? format(startDate, "PPP p")
+                        ? format(startDate, "PPP")
                         : "Pick start date"}
-                    </Button>
+                      <CalendarIcon size={16} className="text-gray-400" />
+                    </button>
                   </PopoverTrigger>
 
-                  <PopoverContent className="w-auto p-4 space-y-3">
+                  <PopoverContent
+                    align="start"
+                    className="w-auto p-0 rounded-xl shadow-lg border z-50"
+                  >
                     <Calendar
                       mode="single"
                       selected={startDate}
                       onSelect={setStartDate}
-                    />
-
-                    <Input
-                      type="time"
-                      onChange={(e) => {
-                        if (!startDate) return;
-                        const [h, m] = e.target.value.split(":");
-                        const newDate = new Date(startDate);
-                        newDate.setHours(Number(h));
-                        newDate.setMinutes(Number(m));
-                        setStartDate(newDate);
-                      }}
+                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
-              {/* END */}
-              <div className="space-y-2">
-                <Label>End Date & Time</Label>
+              {/* END DATE */}
+              <div>
+                <Label>End Date</Label>
 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                    <button className="w-full mt-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">
                       {endDate
-                        ? format(endDate, "PPP p")
+                        ? format(endDate, "PPP")
                         : "Pick end date"}
-                    </Button>
+                      <CalendarIcon size={16} className="text-gray-400" />
+                    </button>
                   </PopoverTrigger>
 
-                  <PopoverContent className="w-auto p-4 space-y-3">
+                  <PopoverContent
+                    align="start"
+                    className="w-auto p-0 rounded-xl shadow-lg border z-50"
+                  >
                     <Calendar
                       mode="single"
                       selected={endDate}
                       onSelect={setEndDate}
-                    />
-
-                    <Input
-                      type="time"
-                      onChange={(e) => {
-                        if (!endDate) return;
-                        const [h, m] = e.target.value.split(":");
-                        const newDate = new Date(endDate);
-                        newDate.setHours(Number(h));
-                        newDate.setMinutes(Number(m));
-                        setEndDate(newDate);
-                      }}
+                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
               {/* STATUS */}
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
@@ -174,7 +165,11 @@ export default function EventForm({
                 />
               </div>
 
-              <Button onClick={handleSubmit} className="w-full">
+              {/* BUTTON */}
+              <Button
+                onClick={handleSubmit}
+                className="w-full rounded-xl"
+              >
                 Create Event
               </Button>
             </div>

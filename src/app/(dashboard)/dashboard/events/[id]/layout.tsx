@@ -71,9 +71,11 @@ export default function EventLayout({
     pathname === `/dashboard/events/${id}/${path}`;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* SIDEBAR */}
-      <div className="w-72 bg-white border-r shadow-sm p-4 flex flex-col">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+
+      {/* ================= SIDEBAR (FIXED) ================= */}
+      <div className="w-72 h-screen sticky top-0 bg-white/80 backdrop-blur border-r shadow-sm p-4 flex flex-col overflow-y-auto">
+
         {/* TITLE */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold">Event Admin</h2>
@@ -90,7 +92,7 @@ export default function EventLayout({
 
         {/* MENU */}
         <div className="space-y-1">
-          {/* EVENT INFO */}
+
           <SidebarItem
             label="Event Info"
             icon={LayoutDashboard}
@@ -121,7 +123,6 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
-          {/* AGENDA */}
           <SidebarItem
             label="Agenda"
             icon={Calendar}
@@ -131,7 +132,6 @@ export default function EventLayout({
             }
           />
 
-          {/* SPEAKER */}
           <SidebarItem
             label="Speaker"
             icon={Mic}
@@ -141,7 +141,6 @@ export default function EventLayout({
             }
           />
 
-          {/* DELEGATE */}
           <SidebarItem
             label="Delegate"
             icon={Users}
@@ -151,7 +150,6 @@ export default function EventLayout({
             }
           />
 
-          {/* DOWNLOAD */}
           <SidebarItem
             label="Download"
             icon={Download}
@@ -161,7 +159,6 @@ export default function EventLayout({
             }
           />
 
-          {/* QUICKLINK */}
           <SidebarItem
             label="Quicklink"
             icon={LinkIcon}
@@ -171,7 +168,6 @@ export default function EventLayout({
             }
           />
 
-          {/* QUIZ */}
           <SidebarItem
             label="Quiz"
             icon={HelpCircle}
@@ -181,7 +177,6 @@ export default function EventLayout({
             }
           />
 
-          {/* POLLS */}
           <SidebarItem
             label="Polls"
             icon={BarChart3}
@@ -214,7 +209,6 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
-          {/* PUSH */}
           <SidebarItem
             label="Push Message"
             icon={Bell}
@@ -224,7 +218,6 @@ export default function EventLayout({
             }
           />
 
-          {/* CONTACT */}
           <SidebarItem
             label="Contact"
             icon={Phone}
@@ -236,8 +229,10 @@ export default function EventLayout({
         </div>
       </div>
 
-      {/* CONTENT */}
-      <div className="flex-1 p-6">{children}</div>
+      {/* ================= CONTENT (SCROLLABLE) ================= */}
+      <div className="flex-1 h-screen overflow-y-auto p-6">
+        {children}
+      </div>
     </div>
   );
 }
