@@ -63,7 +63,7 @@ export default function CommitteeMembers() {
 
     if (editingId) {
       const updated = members.map((m) =>
-        m.id === editingId ? { ...m, ...form } : m
+        m.id === editingId ? { ...m, ...form } : m,
       );
       saveMembers(updated);
     } else {
@@ -91,20 +91,16 @@ export default function CommitteeMembers() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Committee Members</h1>
 
-        <Button onClick={() => setOpen(true)}>
-          + Add Member
-        </Button>
+        <Button onClick={() => setOpen(true)}>+ Add Member</Button>
       </div>
 
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          
           {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -125,7 +121,6 @@ export default function CommitteeMembers() {
             ) : (
               members.map((m) => (
                 <tr key={m.id} className="border-t hover:bg-gray-50">
-                  
                   <td className="p-4 font-medium">{m.name}</td>
                   <td className="p-4">{m.type}</td>
 
@@ -144,27 +139,26 @@ export default function CommitteeMembers() {
 
                   {/* ✅ FIXED ACTIONS */}
                   <td className="p-4">
-                    <div className="flex justify-center items-center gap-6">
-                      
-                      {/* EDIT */}
+                    <div className="flex justify-center items-center gap-4">
                       <button
                         onClick={() => handleEdit(m)}
-                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+                        hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 
+                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Edit
                       </button>
 
-                      {/* DELETE */}
                       <button
                         onClick={() => handleDelete(m.id)}
-                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+                        hover:bg-red-50 hover:border-red-200 hover:text-red-600 
+                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Delete
                       </button>
-
                     </div>
                   </td>
-
                 </tr>
               ))
             )}
@@ -195,14 +189,11 @@ export default function CommitteeMembers() {
               </h2>
 
               <div className="space-y-5">
-                
                 <div>
                   <Label>Name</Label>
                   <Input
                     value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
 
@@ -211,9 +202,7 @@ export default function CommitteeMembers() {
                   <select
                     className="w-full border rounded-md p-2"
                     value={form.type}
-                    onChange={(e) =>
-                      setForm({ ...form, type: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, type: e.target.value })}
                   >
                     <option value="">Select Type</option>
                     {types
@@ -230,9 +219,7 @@ export default function CommitteeMembers() {
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val) =>
-                      setForm({ ...form, active: val })
-                    }
+                    onCheckedChange={(val) => setForm({ ...form, active: val })}
                   />
                 </div>
 

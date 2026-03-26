@@ -4,142 +4,151 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-type Member = {
+/* ================= TYPES ================= */
+
+type SessionDate = {
   id: number;
   name: string;
-  type: string;
+  color: string;
   active: boolean;
 };
 
-type Type = {
-  id: number;
-  name: string;
-  active: boolean;
-};
-
-export default function ExhibitorMembers() {
+export default function SessionDatePage() {
   const params = useParams();
   const id = params?.id as string;
 
-  const memberKey = `exhibitorMembers_${id}`;
-  const typeKey = `exhibitorTypes_${id}`;
+  const storageKey = `sessionDates_${id}`;
 
-  const [members, setMembers] = useState<Member[]>([]);
-  const [types, setTypes] = useState<Type[]>([]);
+  const [data, setData] = useState<SessionDate[]>([]);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
-    type: "",
+    color: "#6366f1",
     active: true,
   });
 
   /* LOAD */
   useEffect(() => {
     if (!id) return;
-
-    const storedMembers = localStorage.getItem(memberKey);
-    const storedTypes = localStorage.getItem(typeKey);
-
+    const stored = localStorage.getItem(storageKey);
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMembers(storedMembers ? JSON.parse(storedMembers) : []);
-    setTypes(storedTypes ? JSON.parse(storedTypes) : []);
+    setData(stored ? JSON.parse(stored) : []);
   }, [id]);
 
-  const saveData = (data: Member[]) => {
-    setMembers(data);
-    localStorage.setItem(memberKey, JSON.stringify(data));
+  const saveData = (updated: SessionDate[]) => {
+    setData(updated);
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
 
   const handleSubmit = () => {
-    if (!form.name || !form.type) return;
+    if (!form.name) return;
 
     if (editingId) {
-      const updated = members.map((m) =>
-        m.id === editingId ? { ...m, ...form } : m,
+      saveData(
+        data.map((d) => (d.id === editingId ? { ...d, ...form } : d))
       );
-      saveData(updated);
     } else {
-      saveData([...members, { id: Date.now(), ...form }]);
+      saveData([...data, { id: Date.now(), ...form }]);
     }
 
-    setForm({ name: "", type: "", active: true });
+    setForm({ name: "", color: "#6366f1", active: true });
     setEditingId(null);
     setOpen(false);
   };
 
-  const handleDelete = (id: number) => {
-    saveData(members.filter((m) => m.id !== id));
+  const confirmDelete = () => {
+    if (!deleteId) return;
+    saveData(data.filter((d) => d.id !== deleteId));
+    setDeleteId(null);
   };
 
-  const handleEdit = (m: Member) => {
+  const handleEdit = (d: SessionDate) => {
     setForm({
-      name: m.name,
-      type: m.type,
-      active: m.active,
+      name: d.name,
+      color: d.color,
+      active: d.active,
     });
-    setEditingId(m.id);
+    setEditingId(d.id);
     setOpen(true);
   };
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      
       {/* HEADER */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Exhibitor Members</h1>
+        <h1 className="text-2xl font-semibold">Session Dates</h1>
 
-        <Button onClick={() => setOpen(true)}>+ Add Member</Button>
+        <Button onClick={() => setOpen(true)}>
+          + Add Session Date
+        </Button>
       </div>
 
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          {/* ✅ FIXED HEADER */}
+          
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Name</th>
-              <th className="p-4 text-left">Type</th>
+              <th className="p-4 text-left">Color</th>
               <th className="p-4 text-left">Status</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {members.length === 0 ? (
+            {data.length === 0 ? (
               <tr>
                 <td colSpan={4} className="text-center p-6 text-gray-400">
-                  No members added
+                  No session dates added
                 </td>
               </tr>
             ) : (
-              members.map((m) => (
-                <tr key={m.id} className="border-t hover:bg-gray-50">
-                  <td className="p-4 font-medium">{m.name}</td>
-                  <td className="p-4">{m.type}</td>
+              data.map((d) => (
+                <tr key={d.id} className="border-t hover:bg-gray-50 group transition">
 
+                  <td className="p-4 font-medium">{d.name}</td>
+
+                  {/* COLOR */}
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ background: d.color }}
+                      />
+                      {d.color}
+                    </div>
+                  </td>
+
+                  {/* STATUS */}
                   <td className="p-4">
                     <span
                       className={`px-3 py-1 text-xs rounded-full ${
-                        m.active
+                        d.active
                           ? "bg-green-100 text-green-600"
                           : "bg-gray-200 text-gray-600"
                       }`}
                     >
-                      {m.active ? "Active" : "Inactive"}
+                      {d.active ? "Active" : "Inactive"}
                     </span>
                   </td>
 
-                  {/* ✅ FIXED ACTIONS */}
+                  {/* ✅ PREMIUM ACTIONS */}
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-4">
+
+                      {/* EDIT */}
                       <button
-                        onClick={() => handleEdit(m)}
+                        onClick={() => handleEdit(d)}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
                         hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 
                         transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
@@ -147,16 +156,19 @@ export default function ExhibitorMembers() {
                         Edit
                       </button>
 
+                      {/* DELETE */}
                       <button
-                        onClick={() => handleDelete(m.id)}
+                        onClick={() => setDeleteId(d.id)}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
                         hover:bg-red-50 hover:border-red-200 hover:text-red-600 
                         transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Delete
                       </button>
+
                     </div>
                   </td>
+
                 </tr>
               ))
             )}
@@ -180,7 +192,7 @@ export default function ExhibitorMembers() {
               exit={{ x: "100%" }}
             >
               <h2 className="text-xl font-semibold mb-6">
-                {editingId ? "Edit Member" : "Add Member"}
+                {editingId ? "Edit Session Date" : "Add Session Date"}
               </h2>
 
               <div className="space-y-5">
@@ -188,33 +200,30 @@ export default function ExhibitorMembers() {
                   <Label>Name</Label>
                   <Input
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, name: e.target.value })
+                    }
                   />
                 </div>
 
                 <div>
-                  <Label>Type</Label>
-                  <select
-                    className="w-full border rounded-md p-2"
-                    value={form.type}
-                    onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  >
-                    <option value="">Select Type</option>
-                    {types
-                      .filter((t) => t.active)
-                      .map((t) => (
-                        <option key={t.id} value={t.name}>
-                          {t.name}
-                        </option>
-                      ))}
-                  </select>
+                  <Label>Color</Label>
+                  <Input
+                    type="color"
+                    value={form.color}
+                    onChange={(e) =>
+                      setForm({ ...form, color: e.target.value })
+                    }
+                  />
                 </div>
 
                 <div className="flex justify-between items-center">
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val) => setForm({ ...form, active: val })}
+                    onCheckedChange={(val) =>
+                      setForm({ ...form, active: val })
+                    }
                   />
                 </div>
 
@@ -224,6 +233,36 @@ export default function ExhibitorMembers() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* DELETE MODAL */}
+      <AnimatePresence>
+        {deleteId && (
+          <motion.div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+            <motion.div className="bg-white p-6 rounded-xl shadow-lg w-[300px]">
+              <h2 className="text-lg font-semibold mb-3">
+                Delete Session Date?
+              </h2>
+
+              <p className="text-sm text-gray-500 mb-5">
+                Are you sure you want to delete this?
+              </p>
+
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setDeleteId(null)}>
+                  Cancel
+                </Button>
+
+                <Button
+                  className="bg-red-500 text-white"
+                  onClick={confirmDelete}
+                >
+                  Delete
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

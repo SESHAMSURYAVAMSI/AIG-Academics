@@ -64,7 +64,7 @@ export default function DelegatePage() {
 
     if (editingId) {
       const updated = delegates.map((d) =>
-        d.id === editingId ? { ...d, ...form } : d
+        d.id === editingId ? { ...d, ...form } : d,
       );
       saveData(updated);
     } else {
@@ -115,15 +115,12 @@ export default function DelegatePage() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Delegates</h1>
 
         <div className="flex gap-3">
-          <Button onClick={() => setOpen(true)}>
-            + Add Delegate
-          </Button>
+          <Button onClick={() => setOpen(true)}>+ Add Delegate</Button>
 
           <label className="flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-md bg-white hover:bg-gray-100">
             <Upload size={16} />
@@ -145,7 +142,6 @@ export default function DelegatePage() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          
           {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -167,7 +163,6 @@ export default function DelegatePage() {
             ) : (
               delegates.map((d) => (
                 <tr key={d.id} className="border-t hover:bg-gray-50">
-                  
                   <td className="p-4 font-medium">{d.name}</td>
                   <td className="p-4">{d.designation}</td>
                   <td className="p-4">{d.email}</td>
@@ -186,27 +181,26 @@ export default function DelegatePage() {
 
                   {/* ✅ FIXED ACTIONS */}
                   <td className="p-4">
-                    <div className="flex justify-center items-center gap-6">
-                      
-                      {/* EDIT */}
+                    <div className="flex justify-center items-center gap-4">
                       <button
                         onClick={() => handleEdit(d)}
-                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+                        hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 
+                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Edit
                       </button>
 
-                      {/* DELETE */}
                       <button
                         onClick={() => handleDelete(d.id)}
-                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+                        hover:bg-red-50 hover:border-red-200 hover:text-red-600 
+                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Delete
                       </button>
-
                     </div>
                   </td>
-
                 </tr>
               ))
             )}

@@ -51,7 +51,7 @@ export default function ExhibitorType() {
 
     if (editingId) {
       const updated = types.map((t) =>
-        t.id === editingId ? { ...t, ...form } : t
+        t.id === editingId ? { ...t, ...form } : t,
       );
       saveData(updated);
     } else {
@@ -80,7 +80,6 @@ export default function ExhibitorType() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Exhibitor Types</h1>
@@ -90,7 +89,6 @@ export default function ExhibitorType() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-
           {/* ✅ FIXED HEADER */}
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -110,7 +108,6 @@ export default function ExhibitorType() {
             ) : (
               types.map((t) => (
                 <tr key={t.id} className="border-t hover:bg-gray-50">
-
                   <td className="p-4 font-medium">{t.name}</td>
 
                   <td className="p-4">
@@ -127,27 +124,26 @@ export default function ExhibitorType() {
 
                   {/* ✅ FIXED ACTIONS */}
                   <td className="p-4">
-                    <div className="flex justify-center items-center gap-6">
-
-                      {/* EDIT */}
+                    <div className="flex justify-center items-center gap-4">
                       <button
                         onClick={() => handleEdit(t)}
-                        className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+                        hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 
+                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Edit
                       </button>
 
-                      {/* DELETE */}
                       <button
                         onClick={() => setDeleteId(t.id)}
-                        className="px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition"
+                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
+                        hover:bg-red-50 hover:border-red-200 hover:text-red-600 
+                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                       >
                         Delete
                       </button>
-
                     </div>
                   </td>
-
                 </tr>
               ))
             )}
@@ -182,9 +178,7 @@ export default function ExhibitorType() {
                   <Label>Exhibitor Type</Label>
                   <Input
                     value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
 
@@ -192,9 +186,7 @@ export default function ExhibitorType() {
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val) =>
-                      setForm({ ...form, active: val })
-                    }
+                    onCheckedChange={(val) => setForm({ ...form, active: val })}
                   />
                 </div>
 
@@ -227,10 +219,7 @@ export default function ExhibitorType() {
                 </p>
 
                 <div className="flex justify-end gap-3 pt-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setDeleteId(null)}
-                  >
+                  <Button variant="outline" onClick={() => setDeleteId(null)}>
                     Cancel
                   </Button>
 

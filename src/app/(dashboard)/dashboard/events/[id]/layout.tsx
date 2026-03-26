@@ -57,6 +57,7 @@ export default function EventLayout({
 
   const [openCommittee, setOpenCommittee] = useState(false);
   const [openExhibitors, setOpenExhibitors] = useState(false);
+  const [openAgenda, setOpenAgenda] = useState(false); // 🔥 NEW
 
   /* AUTO OPEN DROPDOWNS */
   useEffect(() => {
@@ -65,6 +66,7 @@ export default function EventLayout({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpenCommittee(pathname.includes("committee"));
     setOpenExhibitors(pathname.includes("exhibitors"));
+    setOpenAgenda(pathname.includes("agenda")); // 🔥 NEW
   }, [pathname]);
 
   const isActive = (path: string) =>
@@ -73,16 +75,14 @@ export default function EventLayout({
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
 
-      {/* ================= SIDEBAR (FIXED) ================= */}
+      {/* SIDEBAR */}
       <div className="w-72 h-screen sticky top-0 bg-white/80 backdrop-blur border-r shadow-sm p-4 flex flex-col overflow-y-auto">
 
-        {/* TITLE */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold">Event Admin</h2>
           <p className="text-xs text-gray-500">Manage your event</p>
         </div>
 
-        {/* BACK */}
         <button
           onClick={() => router.push("/dashboard")}
           className="mb-4 px-3 py-2 rounded-lg bg-gray-100 hover:bg-indigo-100 text-sm transition"
@@ -90,7 +90,6 @@ export default function EventLayout({
           ← Back
         </button>
 
-        {/* MENU */}
         <div className="space-y-1">
 
           <SidebarItem
@@ -123,14 +122,35 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
-          <SidebarItem
+          {/* 🔥 AGENDA (UPDATED) */}
+          <DropdownMenuItem
             label="Agenda"
             icon={Calendar}
-            active={isActive("agenda")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/agenda`)
-            }
-          />
+            open={openAgenda}
+            setOpen={setOpenAgenda}
+          >
+            <SubItem
+              label="Session Date"
+              active={isActive("agenda/session-date")}
+              onClick={() =>
+                router.push(`/dashboard/events/${id}/agenda/session-date`)
+              }
+            />
+            <SubItem
+              label="Track"
+              active={isActive("agenda/track")}
+              onClick={() =>
+                router.push(`/dashboard/events/${id}/agenda/track`)
+              }
+            />
+            <SubItem
+              label="Session Details"
+              active={isActive("agenda/session-details")}
+              onClick={() =>
+                router.push(`/dashboard/events/${id}/agenda/session-details`)
+              }
+            />
+          </DropdownMenuItem>
 
           <SidebarItem
             label="Speaker"
@@ -229,7 +249,7 @@ export default function EventLayout({
         </div>
       </div>
 
-      {/* ================= CONTENT (SCROLLABLE) ================= */}
+      {/* CONTENT */}
       <div className="flex-1 h-screen overflow-y-auto p-6">
         {children}
       </div>
@@ -237,14 +257,9 @@ export default function EventLayout({
   );
 }
 
-/* ================= SIDEBAR ITEM ================= */
+/* ================= REUSABLE COMPONENTS ================= */
 
-function SidebarItem({
-  label,
-  icon: Icon,
-  active,
-  onClick,
-}: SidebarItemProps) {
+function SidebarItem({ label, icon: Icon, active, onClick }: SidebarItemProps) {
   return (
     <div
       onClick={onClick}
@@ -263,8 +278,6 @@ function SidebarItem({
     </div>
   );
 }
-
-/* ================= DROPDOWN ================= */
 
 function DropdownMenuItem({
   label,
@@ -304,8 +317,6 @@ function DropdownMenuItem({
     </div>
   );
 }
-
-/* ================= SUB ITEM ================= */
 
 function SubItem({ label, active, onClick }: SubItemProps) {
   return (
