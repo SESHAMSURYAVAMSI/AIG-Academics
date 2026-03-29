@@ -64,7 +64,7 @@ export default function LoginPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            🚀 Admin Portal
+            AIG Event Academics App
           </motion.h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
