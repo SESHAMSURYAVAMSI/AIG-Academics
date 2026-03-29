@@ -49,28 +49,29 @@ export default function EventLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const params = useParams<{ id: string }>();
-  const id = params.id;
-
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const pathname = usePathname();
 
   const [openCommittee, setOpenCommittee] = useState(false);
   const [openExhibitors, setOpenExhibitors] = useState(false);
-  const [openAgenda, setOpenAgenda] = useState(false); // 🔥 NEW
+  const [openAgenda, setOpenAgenda] = useState(false);
 
-  /* AUTO OPEN DROPDOWNS */
+  /* ================= AUTO OPEN DROPDOWNS ================= */
+
   useEffect(() => {
     if (!pathname) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpenCommittee(pathname.includes("committee"));
     setOpenExhibitors(pathname.includes("exhibitors"));
-    setOpenAgenda(pathname.includes("agenda")); // 🔥 NEW
+    setOpenAgenda(pathname.includes("agenda"));
   }, [pathname]);
 
   const isActive = (path: string) =>
     pathname === `/dashboard/events/${id}/${path}`;
+
+  /* ================= UI ================= */
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -78,11 +79,13 @@ export default function EventLayout({
       {/* SIDEBAR */}
       <div className="w-72 h-screen sticky top-0 bg-white/80 backdrop-blur border-r shadow-sm p-4 flex flex-col overflow-y-auto">
 
+        {/* HEADER */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold">Event Admin</h2>
           <p className="text-xs text-gray-500">Manage your event</p>
         </div>
 
+        {/* BACK BUTTON */}
         <button
           onClick={() => router.push("/dashboard")}
           className="mb-4 px-3 py-2 rounded-lg bg-gray-100 hover:bg-indigo-100 text-sm transition"
@@ -90,14 +93,31 @@ export default function EventLayout({
           ← Back
         </button>
 
+        {/* MENU */}
         <div className="space-y-1">
 
-          <SidebarItem
-            label="Event Info"
-            icon={LayoutDashboard}
-            active={pathname === `/dashboard/events/${id}`}
-            onClick={() => router.push(`/dashboard/events/${id}`)}
-          />
+                    {/* 🔥 NEW EVENT PAGE */}
+<SidebarItem
+  label="Event"
+  icon={LayoutDashboard}
+  active={pathname === `/dashboard/events/${id}`}
+  onClick={() =>
+    router.push(`/dashboard/events/${id}`)
+  }
+/>
+
+
+          {/* EVENT INFO*/}
+<SidebarItem
+  label="Event Info"
+  icon={LayoutDashboard}
+  active={pathname === `/dashboard/events/${id}/event-info`}
+  onClick={() =>
+    router.push(`/dashboard/events/${id}/event-info`)
+  }
+/>
+
+
 
           {/* COMMITTEE */}
           <DropdownMenuItem
@@ -122,7 +142,7 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
-          {/* 🔥 AGENDA (UPDATED) */}
+          {/* AGENDA */}
           <DropdownMenuItem
             label="Agenda"
             icon={Calendar}
@@ -152,6 +172,7 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
+          {/* OTHER ITEMS */}
           <SidebarItem
             label="Speaker"
             icon={Mic}
@@ -263,16 +284,9 @@ function SidebarItem({ label, icon: Icon, active, onClick }: SidebarItemProps) {
   return (
     <div
       onClick={onClick}
-      className={`relative flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm transition
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm transition
       ${active ? "bg-indigo-50 text-indigo-600" : "hover:bg-gray-100"}`}
     >
-      {active && (
-        <motion.div
-          layoutId="activeIndicator"
-          className="absolute left-0 top-0 h-full w-1 bg-indigo-600 rounded-r"
-        />
-      )}
-
       <Icon size={16} />
       {label}
     </div>

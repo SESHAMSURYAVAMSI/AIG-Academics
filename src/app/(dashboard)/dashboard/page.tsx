@@ -145,8 +145,7 @@ export default function Dashboard() {
 
   {/* MANAGE */}
   <button
-    onClick={() =>
-      router.push(`/dashboard/events/${event.id}`)
+onClick={() => router.push(`/dashboard/events/${event.id}`)
     }
     className="relative px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
     hover:bg-indigo-100 hover:border-indigo-400 hover:text-indigo-800 

@@ -3,28 +3,20 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Papa from "papaparse";
-import DelegateForm from "@/components/forms/DelegateForm";
+
+import DelegateForm from "@/components/forms/delegate/DelegateForm";
+import DelegateTable from "@/components/forms/delegate/DelegateTable";
 
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 
-/* ================= TYPES ================= */
-
-type Delegate = {
-  id: number;
-  name: string;
-  designation: string;
-  email: string;
-  active: boolean;
-};
+import { Delegate } from "@/types/delegate";
 
 type CSVRow = {
   name?: string;
   designation?: string;
   email?: string;
 };
-
-/* ================= COMPONENT ================= */
 
 export default function DelegatePage() {
   const params = useParams();
@@ -64,7 +56,7 @@ export default function DelegatePage() {
 
     if (editingId) {
       const updated = delegates.map((d) =>
-        d.id === editingId ? { ...d, ...form } : d,
+        d.id === editingId ? { ...d, ...form } : d
       );
       saveData(updated);
     } else {
@@ -84,12 +76,7 @@ export default function DelegatePage() {
 
   /* EDIT */
   const handleEdit = (d: Delegate) => {
-    setForm({
-      name: d.name,
-      designation: d.designation,
-      email: d.email,
-      active: d.active,
-    });
+    setForm(d);
     setEditingId(d.id);
     setOpen(true);
   };
@@ -140,73 +127,11 @@ export default function DelegatePage() {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          {/* ✅ FIXED HEADER */}
-          <thead className="bg-gray-100 text-gray-600">
-            <tr>
-              <th className="p-4 text-left">Name</th>
-              <th className="p-4 text-left">Designation</th>
-              <th className="p-4 text-left">Email</th>
-              <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-center">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {delegates.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center p-6 text-gray-400">
-                  No delegates added
-                </td>
-              </tr>
-            ) : (
-              delegates.map((d) => (
-                <tr key={d.id} className="border-t hover:bg-gray-50">
-                  <td className="p-4 font-medium">{d.name}</td>
-                  <td className="p-4">{d.designation}</td>
-                  <td className="p-4">{d.email}</td>
-
-                  <td className="p-4">
-                    <span
-                      className={`px-3 py-1 text-xs rounded-full ${
-                        d.active
-                          ? "bg-green-100 text-green-600"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      {d.active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-
-                  {/* ✅ FIXED ACTIONS */}
-                  <td className="p-4">
-                    <div className="flex justify-center items-center gap-4">
-                      <button
-                        onClick={() => handleEdit(d)}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
-                        hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 
-                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(d.id)}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
-                        hover:bg-red-50 hover:border-red-200 hover:text-red-600 
-                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DelegateTable
+        delegates={delegates}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       {/* FORM */}
       <DelegateForm

@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -16,29 +17,32 @@ type EventType = {
   start: string;
   end: string;
   active: boolean;
+  image?: string; // ✅ FIXED (string instead of File)
 };
 
 /* ================= COMPONENT ================= */
 
-export default function EventInfoPage() {
+export default function EventPage() {
   const params = useParams<{ id: string }>();
-  const id = params.id;
+  const id = Number(params.id);
 
   const [event, setEvent] = useState<EventType | null>(null);
 
-  /* LOAD EVENT */
+  /* ================= LOAD ================= */
+
   useEffect(() => {
     const stored = localStorage.getItem("events");
     if (!stored) return;
 
     const events: EventType[] = JSON.parse(stored);
-    const found = events.find((e) => e.id === Number(id));
+    const found = events.find((e) => e.id === id);
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (found) setEvent(found);
   }, [id]);
 
-  /* UPDATE FIELD (NO ANY ✅) */
+  /* ================= UPDATE ================= */
+
   const handleChange = <K extends keyof EventType>(
     key: K,
     value: EventType[K]
@@ -49,10 +53,13 @@ export default function EventInfoPage() {
     });
   };
 
-  /* SAVE */
+  /* ================= SAVE ================= */
+
   const handleSave = () => {
+    if (!event) return;
+
     const stored = localStorage.getItem("events");
-    if (!stored || !event) return;
+    if (!stored) return;
 
     const events: EventType[] = JSON.parse(stored);
 
@@ -62,77 +69,117 @@ export default function EventInfoPage() {
 
     localStorage.setItem("events", JSON.stringify(updated));
 
-    alert("Event updated ✅");
+    alert("Event updated successfully ✅");
   };
 
-  /* LOADING */
+  /* ================= LOADING ================= */
+
   if (!event) {
-    return <p>Loading...</p>;
+    return (
+      <div className="p-6">
+        <p className="text-gray-500">Loading event...</p>
+      </div>
+    );
   }
 
-  /* UI */
+  /* ================= UI ================= */
+
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-semibold">Event Info</h1>
+    <div className="p-6 flex justify-center">
+      <div className="w-full max-w-2xl bg-white border rounded-xl shadow-sm p-6 space-y-6">
 
-      {/* NAME */}
-      <div>
-        <Label>Event Name</Label>
-        <Input
-          value={event.name}
-          onChange={(e) => handleChange("name", e.target.value)}
-        />
-      </div>
+        <h1 className="text-2xl font-semibold">
+          Event Details
+        </h1>
 
-      {/* LOCATION */}
-      <div>
-        <Label>Location</Label>
-        <Input
-          value={event.location}
-          onChange={(e) => handleChange("location", e.target.value)}
-        />
-      </div>
+        {/* 🔥 IMAGE PREVIEW */}
+        {event.image && (
+          <div>
+            <Label>Event Image</Label>
+            <img
+              src={event.image}
+              alt="Event"
+              className="mt-2 w-full h-52 object-cover rounded-xl border"
+            />
+          </div>
+        )}
 
-      {/* START */}
-      <div>
-        <Label>Start</Label>
-        <Input
-          value={event.start}
-          onChange={(e) => handleChange("start", e.target.value)}
-        />
-      </div>
-
-      {/* END */}
-      <div>
-        <Label>End</Label>
-        <Input
-          value={event.end}
-          onChange={(e) => handleChange("end", e.target.value)}
-        />
-      </div>
-
-      {/* STATUS */}
-      <div className="flex items-center justify-between">
-        <Label>Status</Label>
-
-        <div className="flex items-center gap-3">
-          <span
-            className={`text-sm ${
-              event.active ? "text-green-600" : "text-gray-500"
-            }`}
-          >
-            {event.active ? "Active" : "Inactive"}
-          </span>
-
-          <Switch
-            checked={event.active}
-            onCheckedChange={(val) => handleChange("active", val)}
+        {/* NAME */}
+        <div>
+          <Label>Event Name</Label>
+          <Input
+            value={event.name}
+            onChange={(e) =>
+              handleChange("name", e.target.value)
+            }
           />
         </div>
-      </div>
 
-      {/* SAVE */}
-      <Button onClick={handleSave}>Save Changes</Button>
+        {/* LOCATION */}
+        <div>
+          <Label>Location</Label>
+          <Input
+            value={event.location}
+            onChange={(e) =>
+              handleChange("location", e.target.value)
+            }
+          />
+        </div>
+
+        {/* DATES */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Start Date</Label>
+            <Input
+              type="date"
+              value={event.start}
+              onChange={(e) =>
+                handleChange("start", e.target.value)
+              }
+            />
+          </div>
+
+          <div>
+            <Label>End Date</Label>
+            <Input
+              type="date"
+              value={event.end}
+              onChange={(e) =>
+                handleChange("end", e.target.value)
+              }
+            />
+          </div>
+        </div>
+
+        {/* STATUS */}
+        <div className="flex items-center justify-between">
+          <Label>Status</Label>
+
+          <div className="flex items-center gap-3">
+            <span
+              className={`text-sm font-medium ${
+                event.active
+                  ? "text-green-600"
+                  : "text-gray-500"
+              }`}
+            >
+              {event.active ? "Active" : "Inactive"}
+            </span>
+
+            <Switch
+              checked={event.active}
+              onCheckedChange={(val) =>
+                handleChange("active", val)
+              }
+            />
+          </div>
+        </div>
+
+        {/* SAVE */}
+        <Button onClick={handleSave} className="w-full">
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 }

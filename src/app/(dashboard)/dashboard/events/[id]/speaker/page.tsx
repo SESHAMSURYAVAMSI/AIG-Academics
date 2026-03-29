@@ -2,24 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import SpeakerForm from "@/components/forms/SpeakerForm";
+
+import SpeakerForm from "@/components/forms/speaker/SpeakerForm";
+import SpeakerTable from "@/components/forms/speaker/SpeakerTable";
 
 import { Button } from "@/components/ui/button";
 
-type Speaker = {
-  id: number;
-  name: string;
-  type: string;
-  location: string;
-  description: string;
-  active: boolean;
-};
+import { Speaker } from "@/types/speaker";
 
 export default function SpeakerPage() {
   const params = useParams();
   const id = params?.id as string;
 
   const storageKey = `speakers_${id}`;
+
+  /* ================= STATE ================= */
 
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [open, setOpen] = useState(false);
@@ -29,55 +26,57 @@ export default function SpeakerPage() {
     name: "",
     type: "",
     location: "",
-    description: "", // ✅ IMPORTANT
+    description: "",
     active: true,
   });
 
-  /* LOAD */
+  /* ================= LOAD ================= */
+
   useEffect(() => {
     if (!id) return;
+
     const stored = localStorage.getItem(storageKey);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSpeakers(stored ? JSON.parse(stored) : []);
   }, [id]);
 
-  /* SAVE */
+  /* ================= SAVE ================= */
+
   const saveData = (data: Speaker[]) => {
     setSpeakers(data);
     localStorage.setItem(storageKey, JSON.stringify(data));
   };
 
-  /* SUBMIT */
+  /* ================= CREATE / UPDATE ================= */
+
   const handleSubmit = () => {
-    if (!form.name || !form.type) return;
+    if (!form.name.trim() || !form.type.trim()) return;
 
     if (editingId) {
       const updated = speakers.map((s) =>
-        s.id === editingId ? { ...s, ...form } : s,
+        s.id === editingId ? { ...s, ...form } : s
       );
       saveData(updated);
     } else {
-      saveData([...speakers, { id: Date.now(), ...form }]);
+      const newSpeaker: Speaker = {
+        // eslint-disable-next-line react-hooks/purity
+        id: Date.now(),
+        ...form,
+      };
+      saveData([...speakers, newSpeaker]);
     }
 
-    setForm({
-      name: "",
-      type: "",
-      location: "",
-      description: "",
-      active: true,
-    });
-
-    setEditingId(null);
-    setOpen(false);
+    resetForm();
   };
 
-  /* DELETE */
+  /* ================= DELETE ================= */
+
   const handleDelete = (id: number) => {
-    saveData(speakers.filter((s) => s.id !== id));
+    const updated = speakers.filter((s) => s.id !== id);
+    saveData(updated);
   };
 
-  /* EDIT */
+  /* ================= EDIT ================= */
+
   const handleEdit = (speaker: Speaker) => {
     setForm({
       name: speaker.name,
@@ -91,6 +90,23 @@ export default function SpeakerPage() {
     setOpen(true);
   };
 
+  /* ================= RESET ================= */
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      type: "",
+      location: "",
+      description: "",
+      active: true,
+    });
+
+    setEditingId(null);
+    setOpen(false);
+  };
+
+  /* ================= UI ================= */
+
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* HEADER */}
@@ -101,78 +117,13 @@ export default function SpeakerPage() {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-600">
-            <tr>
-              <th className="p-4 text-left">Name</th>
-              <th className="p-4 text-left">Type</th>
-              <th className="p-4 text-left">Location</th>
-              <th className="p-4 text-left">Description</th>
-              <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-center">Actions</th>
-            </tr>
-          </thead>
+      <SpeakerTable
+        speakers={speakers}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-          <tbody>
-            {speakers.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center p-6 text-gray-400">
-                  No speakers added
-                </td>
-              </tr>
-            ) : (
-              speakers.map((s) => (
-                <tr key={s.id} className="border-t hover:bg-gray-50">
-                  <td className="p-4 font-medium">{s.name}</td>
-                  <td className="p-4">{s.type}</td>
-                  <td className="p-4">{s.location}</td>
-
-                  <td className="p-4 text-gray-600 max-w-[200px] truncate">
-                    {s.description}
-                  </td>
-
-                  <td className="p-4">
-                    <span
-                      className={`px-3 py-1 text-xs rounded-full ${
-                        s.active
-                          ? "bg-green-100 text-green-600"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      {s.active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-
-                  <td className="p-4">
-                    <div className="flex justify-center items-center gap-4">
-                      <button
-                        onClick={() => handleEdit(s)}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
-                        hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 
-                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(s.id)}
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
-                        hover:bg-red-50 hover:border-red-200 hover:text-red-600 
-                        transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ✅ USE YOUR FORM COMPONENT */}
+      {/* FORM DRAWER */}
       <SpeakerForm
         open={open}
         setOpen={setOpen}

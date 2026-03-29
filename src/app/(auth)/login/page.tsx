@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,21 +19,14 @@ export default function LoginPage() {
   const { register, handleSubmit } = useForm<FormData>();
   const { login } = useAuth();
   const router = useRouter();
-
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-
       await login(data);
-
-      // ✅ Success message
       alert("Login successful ✅");
-
-      // ✅ Redirect to dashboard
       router.push("/dashboard");
-
     } catch (error) {
       alert("Login failed ❌");
     } finally {
@@ -41,59 +35,69 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex h-screen items-center justify-center overflow-hidden bg-black">
-      
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 opacity-30 blur-3xl animate-pulse"></div>
-
-      <div className="absolute top-20 left-20 w-72 h-72 bg-pink-500 rounded-full blur-[120px] opacity-40"></div>
-      <div className="absolute bottom-20 right-20 w-72 h-72 bg-blue-500 rounded-full blur-[120px] opacity-40"></div>
-
-      {/* Card */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#D8E8FB] to-white p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 60 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="z-10"
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden grid md:grid-cols-2"
       >
-        <div className="w-[400px] p-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-          
-          <motion.h1
-            className="text-3xl font-bold text-center text-white mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            AIG Event Academics app
-          </motion.h1>
+        {/* LEFT - FORM */}
+        <div className="p-6 md:p-8 flex flex-col justify-center">
+          <div className="text-center mb-5">
+            <h2 className="text-2xl font-bold text-black">APP Login</h2>
+            <p className="text-gray-500 text-sm">
+              Welcome back! Login to continue.
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            
-            <Input
-              placeholder="Email"
-              {...register("email")}
-              className="bg-white/10 text-white border-white/20 focus:ring-2 focus:ring-pink-500"
-            />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label className="text-sm text-black font-medium">Email</label>
+              <Input
+                placeholder="Enter your email"
+                {...register("email")}
+                className="mt-1 bg-gray-100 text-black h-9"
+              />
+            </div>
 
-            <Input
-              type="password"
-              placeholder="Password"
-              {...register("password")}
-              className="bg-white/10 text-white border-white/20 focus:ring-2 focus:ring-purple-500"
-            />
+            {/* Password */}
+            <div>
+              <label className="text-sm text-black font-medium">Password</label>
+              <Input
+                type="password"
+                placeholder="Enter your password"
+                {...register("password")}
+                className="mt-1 bg-gray-100 text-black h-9"
+              />
+            </div>
 
+            {/* Button */}
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-semibold hover:opacity-90 transition-all"
+              className="w-full h-9 bg-sky-800 hover:bg-sky-900 text-white font-semibold rounded-md transition"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Authenticating..." : "Login"}
             </Button>
           </form>
+        </div>
 
-          <p className="text-center text-gray-300 text-sm mt-5">
-            Secure Admin Access 🔐
-          </p>
+        {/* RIGHT - IMAGE */}
+        <div className="hidden md:block relative">
+          {/* <Image
+            src="https://aig-academics.s3.ap-southeast-1.amazonaws.com/login_bdhrsz.png"
+            alt="Login"
+            fill
+            className="object-cover"
+            unoptimized
+          /> */}
+          <img
+            src="https://aig-academics.s3.ap-southeast-1.amazonaws.com/login_bdhrsz.png"
+            alt="Login Background"
+            className="w-full h-full object-cover"
+          />
         </div>
       </motion.div>
     </div>
