@@ -18,6 +18,8 @@ import {
   Phone,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Link } from "lucide-react";
+
 
 /* ================= TYPES ================= */
 
@@ -76,10 +78,8 @@ export default function EventLayout({
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-
       {/* SIDEBAR */}
       <div className="w-72 h-screen sticky top-0 bg-white/80 backdrop-blur border-r shadow-sm p-4 flex flex-col overflow-y-auto">
-
         {/* HEADER */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold">Event Admin</h2>
@@ -96,29 +96,21 @@ export default function EventLayout({
 
         {/* MENU */}
         <div className="space-y-1">
-
-                    {/* 🔥 NEW EVENT PAGE */}
-<SidebarItem
-  label="Event"
-  icon={LayoutDashboard}
-  active={pathname === `/dashboard/events/${id}`}
-  onClick={() =>
-    router.push(`/dashboard/events/${id}`)
-  }
-/>
-
+          {/* 🔥 NEW EVENT PAGE */}
+          <SidebarItem
+            label="Event"
+            icon={LayoutDashboard}
+            active={pathname === `/dashboard/events/${id}`}
+            onClick={() => router.push(`/dashboard/events/${id}`)}
+          />
 
           {/* EVENT INFO*/}
-<SidebarItem
-  label="Event Info"
-  icon={LayoutDashboard}
-  active={pathname === `/dashboard/events/${id}/event-info`}
-  onClick={() =>
-    router.push(`/dashboard/events/${id}/event-info`)
-  }
-/>
-
-
+          <SidebarItem
+            label="Event Info"
+            icon={LayoutDashboard}
+            active={pathname === `/dashboard/events/${id}/event-info`}
+            onClick={() => router.push(`/dashboard/events/${id}/event-info`)}
+          />
 
           {/* COMMITTEE */}
           <DropdownMenuItem
@@ -174,27 +166,27 @@ export default function EventLayout({
           </DropdownMenuItem>
 
           {/* Speaker*/}
-<DropdownMenuItem
-  label="Speaker"
-  icon={Mic}
-  open={openSpeaker}
-  setOpen={setOpenSpeaker}
->
-  <SubItem
-    label="Speaker Type"
-    active={isActive("speaker/type")}
-    onClick={() =>
-      router.push(`/dashboard/events/${id}/speaker/type`)
-    }
-  />
-  <SubItem
-    label="Speaker Members"
-    active={isActive("speaker/members")}
-    onClick={() =>
-      router.push(`/dashboard/events/${id}/speaker/members`)
-    }
-  />
-</DropdownMenuItem>
+          <DropdownMenuItem
+            label="Speaker"
+            icon={Mic}
+            open={openSpeaker}
+            setOpen={setOpenSpeaker}
+          >
+            <SubItem
+              label="Speaker Type"
+              active={isActive("speaker/type")}
+              onClick={() =>
+                router.push(`/dashboard/events/${id}/speaker/type`)
+              }
+            />
+            <SubItem
+              label="Speaker Members"
+              active={isActive("speaker/members")}
+              onClick={() =>
+                router.push(`/dashboard/events/${id}/speaker/members`)
+              }
+            />
+          </DropdownMenuItem>
 
           {/* delegate*/}
 
@@ -202,9 +194,7 @@ export default function EventLayout({
             label="Delegate"
             icon={Users}
             active={isActive("delegate")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/delegate`)
-            }
+            onClick={() => router.push(`/dashboard/events/${id}/delegate`)}
           />
 
           {/* Download*/}
@@ -212,21 +202,16 @@ export default function EventLayout({
           <SidebarItem
             label="Download"
             icon={Download}
-            active={isActive("download")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/download`)
-            }
+            active={pathname === `/dashboard/events/${id}/downloads`}
+            onClick={() => router.push(`/dashboard/events/${id}/downloads`)}
           />
 
           {/* Quicklink*/}
-
           <SidebarItem
-            label="Quicklink"
-            icon={LinkIcon}
-            active={isActive("quicklink")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/quicklink`)
-            }
+            label="Quicklinks"
+            icon={Link}
+            active={pathname === `/dashboard/events/${id}/quicklinks`}
+            onClick={() => router.push(`/dashboard/events/${id}/quicklinks`)}
           />
 
           {/* Quiz*/}
@@ -235,9 +220,7 @@ export default function EventLayout({
             label="Quiz"
             icon={HelpCircle}
             active={isActive("quiz")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/quiz`)
-            }
+            onClick={() => router.push(`/dashboard/events/${id}/quiz`)}
           />
 
           {/* Polls*/}
@@ -246,9 +229,7 @@ export default function EventLayout({
             label="Polls"
             icon={BarChart3}
             active={isActive("polls")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/polls`)
-            }
+            onClick={() => router.push(`/dashboard/events/${id}/polls`)}
           />
 
           {/* EXHIBITORS */}
@@ -280,9 +261,7 @@ export default function EventLayout({
             label="Push Message"
             icon={Bell}
             active={isActive("push-message")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/push-message`)
-            }
+            onClick={() => router.push(`/dashboard/events/${id}/push-message`)}
           />
 
           {/* Contact*/}
@@ -291,17 +270,13 @@ export default function EventLayout({
             label="Contact"
             icon={Phone}
             active={isActive("contact")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/contact`)
-            }
+            onClick={() => router.push(`/dashboard/events/${id}/contact`)}
           />
         </div>
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 h-screen overflow-y-auto p-6">
-        {children}
-      </div>
+      <div className="flex-1 h-screen overflow-y-auto p-6">{children}</div>
     </div>
   );
 }
@@ -365,9 +340,7 @@ function SubItem({ label, active, onClick }: SubItemProps) {
     <div
       onClick={onClick}
       className={`px-3 py-2 rounded-md text-sm cursor-pointer ${
-        active
-          ? "bg-indigo-100 text-indigo-600"
-          : "hover:bg-gray-100"
+        active ? "bg-indigo-100 text-indigo-600" : "hover:bg-gray-100"
       }`}
     >
       {label}
