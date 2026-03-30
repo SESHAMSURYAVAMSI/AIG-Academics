@@ -32,15 +32,14 @@ export default function DelegatePage() {
     name: "",
     designation: "",
     email: "",
+    image: "", // ✅ FIXED
     active: true,
   });
 
   /* LOAD */
   useEffect(() => {
     if (!id) return;
-
     const stored = localStorage.getItem(storageKey);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDelegates(stored ? JSON.parse(stored) : []);
   }, [id]);
 
@@ -60,10 +59,25 @@ export default function DelegatePage() {
       );
       saveData(updated);
     } else {
-      saveData([...delegates, { id: Date.now(), ...form }]);
+      saveData([
+        ...delegates,
+        // eslint-disable-next-line react-hooks/purity
+        { id: Date.now(), ...form },
+      ]);
     }
 
-    setForm({ name: "", designation: "", email: "", active: true });
+    resetForm();
+  };
+
+  /* RESET */
+  const resetForm = () => {
+    setForm({
+      name: "",
+      designation: "",
+      email: "",
+      image: "",
+      active: true,
+    });
     setEditingId(null);
     setOpen(false);
   };
@@ -76,7 +90,14 @@ export default function DelegatePage() {
 
   /* EDIT */
   const handleEdit = (d: Delegate) => {
-    setForm(d);
+    setForm({
+      name: d.name,
+      designation: d.designation,
+      email: d.email,
+      image: d.image || "", // ✅ FIX
+      active: d.active,
+    });
+
     setEditingId(d.id);
     setOpen(true);
   };
@@ -92,6 +113,7 @@ export default function DelegatePage() {
           name: row.name || "",
           designation: row.designation || "",
           email: row.email || "",
+          image: "", // ✅ IMPORTANT
           active: true,
         }));
 
@@ -102,12 +124,15 @@ export default function DelegatePage() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Delegates</h1>
 
         <div className="flex gap-3">
-          <Button onClick={() => setOpen(true)}>+ Add Delegate</Button>
+          <Button onClick={() => setOpen(true)}>
+            + Add Delegate
+          </Button>
 
           <label className="flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-md bg-white hover:bg-gray-100">
             <Upload size={16} />
@@ -131,6 +156,10 @@ export default function DelegatePage() {
         delegates={delegates}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onAdd={() => {
+          setEditingId(null);
+          setOpen(true);
+        }} // ✅ FIXED
       />
 
       {/* FORM */}

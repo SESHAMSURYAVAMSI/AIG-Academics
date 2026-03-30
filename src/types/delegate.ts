@@ -3,5 +3,6 @@ export type Delegate = {
   name: string;
   designation: string;
   email: string;
+  image?: string; // ✅ ADD THIS
   active: boolean;
 };

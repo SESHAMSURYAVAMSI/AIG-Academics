@@ -37,22 +37,30 @@ export default function EventInfoForm({
     <AnimatePresence>
       {open && (
         <>
+          {/* BACKDROP */}
           <motion.div
             className="fixed inset-0 bg-black/30"
             onClick={() => setOpen(false)}
           />
 
+          {/* DRAWER */}
           <motion.div
-            className="fixed right-0 top-0 w-[420px] h-full bg-white p-6 shadow-xl"
+            className="fixed right-0 top-0 w-[420px] h-screen bg-white shadow-xl flex flex-col"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
           >
-            <h2 className="text-xl font-semibold mb-6">
-              {editingId ? "Edit Event Info" : "Add Event Info"}
-            </h2>
+            {/* HEADER (sticky) */}
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-semibold">
+                {editingId ? "Edit Event Info" : "Add Event Info"}
+              </h2>
+            </div>
 
-            <div className="space-y-5">
+            {/* SCROLLABLE CONTENT */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-24">
+
+              {/* TITLE */}
               <div>
                 <Label>Title</Label>
                 <Input
@@ -63,9 +71,12 @@ export default function EventInfoForm({
                 />
               </div>
 
+              {/* DESCRIPTION */}
               <div>
                 <Label>Description</Label>
                 <Textarea
+                  rows={6}
+                  className="resize-none"
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
@@ -114,6 +125,7 @@ export default function EventInfoForm({
                 </div>
               </div>
 
+              {/* STATUS */}
               <div className="flex justify-between items-center">
                 <Label>Status</Label>
                 <Switch
@@ -124,10 +136,15 @@ export default function EventInfoForm({
                 />
               </div>
 
+            </div>
+
+            {/* FOOTER (fixed button) */}
+            <div className="p-6 border-t bg-white">
               <Button onClick={handleSubmit} className="w-full">
                 {editingId ? "Update" : "Create"}
               </Button>
             </div>
+
           </motion.div>
         </>
       )}

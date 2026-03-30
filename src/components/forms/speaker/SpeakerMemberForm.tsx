@@ -5,29 +5,29 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
-type FormType = {
-  name: string;
-  designation: string;
-  email: string;
-  image: string; // ✅ NEW
-  active: boolean;
-};
+import {
+  SpeakerMemberFormType,
+  SpeakerType,
+} from "@/types/speakerMember";
 
 type Props = {
   open: boolean;
-  setOpen: (val: boolean) => void;
-  form: FormType;
-  setForm: (val: FormType) => void;
+  setOpen: (v: boolean) => void;
+  form: SpeakerMemberFormType;
+  setForm: (v: SpeakerMemberFormType) => void;
+  types: SpeakerType[];
   handleSubmit: () => void;
   editingId: number | null;
 };
 
-export default function DelegateForm({
+export default function SpeakerMemberForm({
   open,
   setOpen,
   form,
   setForm,
+  types,
   handleSubmit,
   editingId,
 }: Props) {
@@ -35,26 +35,23 @@ export default function DelegateForm({
     <AnimatePresence>
       {open && (
         <>
-          {/* BACKDROP */}
           <motion.div
             className="fixed inset-0 bg-black/30"
             onClick={() => setOpen(false)}
           />
 
-          {/* DRAWER */}
           <motion.div
-            className="fixed top-0 right-0 w-[420px] h-full bg-white p-6 shadow-xl overflow-y-auto"
+            className="fixed right-0 top-0 w-[420px] h-full bg-white p-6 shadow-xl overflow-y-auto"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
           >
             <h2 className="text-xl font-semibold mb-6">
-              {editingId ? "Edit Delegate" : "Add Delegate"}
+              {editingId ? "Edit Speaker" : "Add Speaker"}
             </h2>
 
             <div className="space-y-5">
 
-              {/* NAME */}
               <div>
                 <Label>Name</Label>
                 <Input
@@ -65,19 +62,6 @@ export default function DelegateForm({
                 />
               </div>
 
-              {/* EMAIL */}
-              <div>
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) =>
-                    setForm({ ...form, email: e.target.value })
-                  }
-                />
-              </div>
-
-              {/* DESIGNATION */}
               <div>
                 <Label>Designation</Label>
                 <Input
@@ -88,12 +72,21 @@ export default function DelegateForm({
                 />
               </div>
 
-              {/* IMAGE UPLOAD */}
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* IMAGE */}
               <div>
                 <Label>Image</Label>
 
-                <div className="mt-2 border-2 border-dashed rounded-xl p-6 text-center relative hover:border-indigo-400 transition">
-
+                <div className="border-2 border-dashed p-6 text-center relative">
                   <input
                     type="file"
                     accept="image/*"
@@ -118,37 +111,44 @@ export default function DelegateForm({
                       Click to upload image
                     </p>
                   ) : (
-                    <div className="relative">
-                      <img
-                        src={form.image}
-                        className="w-full h-40 object-cover rounded"
-                      />
-
-                      <button
-                        onClick={() =>
-                          setForm({ ...form, image: "" })
-                        }
-                        className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                    <img
+                      src={form.image}
+                      className="h-40 w-full object-cover rounded"
+                    />
                   )}
                 </div>
               </div>
 
-              {/* STATUS */}
+              <div>
+                <Label>Speaker Type</Label>
+                <select
+                  className="w-full border rounded-md p-2"
+                  value={form.type}
+                  onChange={(e) =>
+                    setForm({ ...form, type: e.target.value })
+                  }
+                >
+                  <option value="">Select Type</option>
+                  {types
+                    .filter((t) => t.active)
+                    .map((t) => (
+                      <option key={t.id} value={t.name}>
+                        {t.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
               <div className="flex justify-between items-center">
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
-                  onCheckedChange={(val) =>
-                    setForm({ ...form, active: val })
+                  onCheckedChange={(v) =>
+                    setForm({ ...form, active: v })
                   }
                 />
               </div>
 
-              {/* SUBMIT */}
               <Button onClick={handleSubmit} className="w-full">
                 {editingId ? "Update" : "Create"}
               </Button>

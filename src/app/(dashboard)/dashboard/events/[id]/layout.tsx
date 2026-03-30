@@ -56,6 +56,7 @@ export default function EventLayout({
   const [openCommittee, setOpenCommittee] = useState(false);
   const [openExhibitors, setOpenExhibitors] = useState(false);
   const [openAgenda, setOpenAgenda] = useState(false);
+  const [openSpeaker, setOpenSpeaker] = useState(false);
 
   /* ================= AUTO OPEN DROPDOWNS ================= */
 
@@ -172,15 +173,30 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
-          {/* OTHER ITEMS */}
-          <SidebarItem
-            label="Speaker"
-            icon={Mic}
-            active={isActive("speaker")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/speaker`)
-            }
-          />
+          {/* Speaker*/}
+<DropdownMenuItem
+  label="Speaker"
+  icon={Mic}
+  open={openSpeaker}
+  setOpen={setOpenSpeaker}
+>
+  <SubItem
+    label="Speaker Type"
+    active={isActive("speaker/type")}
+    onClick={() =>
+      router.push(`/dashboard/events/${id}/speaker/type`)
+    }
+  />
+  <SubItem
+    label="Speaker Members"
+    active={isActive("speaker/members")}
+    onClick={() =>
+      router.push(`/dashboard/events/${id}/speaker/members`)
+    }
+  />
+</DropdownMenuItem>
+
+          {/* delegate*/}
 
           <SidebarItem
             label="Delegate"
@@ -191,6 +207,8 @@ export default function EventLayout({
             }
           />
 
+          {/* Download*/}
+
           <SidebarItem
             label="Download"
             icon={Download}
@@ -199,6 +217,8 @@ export default function EventLayout({
               router.push(`/dashboard/events/${id}/download`)
             }
           />
+
+          {/* Quicklink*/}
 
           <SidebarItem
             label="Quicklink"
@@ -209,6 +229,8 @@ export default function EventLayout({
             }
           />
 
+          {/* Quiz*/}
+
           <SidebarItem
             label="Quiz"
             icon={HelpCircle}
@@ -217,6 +239,8 @@ export default function EventLayout({
               router.push(`/dashboard/events/${id}/quiz`)
             }
           />
+
+          {/* Polls*/}
 
           <SidebarItem
             label="Polls"
@@ -250,6 +274,8 @@ export default function EventLayout({
             />
           </DropdownMenuItem>
 
+          {/* Push message*/}
+
           <SidebarItem
             label="Push Message"
             icon={Bell}
@@ -258,6 +284,8 @@ export default function EventLayout({
               router.push(`/dashboard/events/${id}/push-message`)
             }
           />
+
+          {/* Contact*/}
 
           <SidebarItem
             label="Contact"
