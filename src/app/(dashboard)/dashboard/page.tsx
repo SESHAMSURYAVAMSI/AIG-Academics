@@ -14,9 +14,10 @@ type EventType = {
   id: number;
   name: string;
   location: string;
-  start: string;
-  end: string;
+  start: string; // ✅ yyyy-MM-dd
+  end: string;   // ✅ yyyy-MM-dd
   active: boolean;
+  image: string; // ✅ added
 };
 
 /* ================= COMPONENT ================= */
@@ -36,34 +37,60 @@ export default function Dashboard() {
   const [form, setForm] = useState({
     name: "",
     location: "",
+    image: "", // ✅ added
     active: true,
   });
 
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
 
+  /* ================= SAVE ================= */
+
   const saveData = (data: EventType[]) => {
     setEvents(data);
     localStorage.setItem("events", JSON.stringify(data));
   };
 
+  /* ================= ADD EVENT ================= */
+
   const handleAddEvent = () => {
+    if (!form.name) return;
+
+    // ✅ FIXED DATE FORMAT
+    const formattedStart = startDate
+      ? startDate.toISOString().split("T")[0]
+      : "";
+
+    const formattedEnd = endDate
+      ? endDate.toISOString().split("T")[0]
+      : "";
+
     const newEvent: EventType = {
       id: Date.now(),
       name: form.name,
       location: form.location,
-      start: startDate?.toISOString() || "",
-      end: endDate?.toISOString() || "",
+      start: formattedStart,
+      end: formattedEnd,
+      image: form.image, // ✅ added
       active: form.active,
     };
 
     saveData([...events, newEvent]);
 
-    setForm({ name: "", location: "", active: true });
+    // RESET
+    setForm({
+      name: "",
+      location: "",
+      image: "",
+      active: true,
+    });
+
     setStartDate(undefined);
     setEndDate(undefined);
     setOpen(false);
   };
+
+  /* ================= DELETE ================= */
 
   const confirmDelete = () => {
     if (deleteId === null) return;
@@ -71,9 +98,11 @@ export default function Dashboard() {
     setDeleteId(null);
   };
 
+  /* ================= UI ================= */
+
   return (
     <div className="min-h-screen bg-gray-50 p-8 text-gray-900">
-      
+
       {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-semibold tracking-tight">
@@ -94,6 +123,7 @@ export default function Dashboard() {
               <th className="p-4 text-left">Location</th>
               <th className="p-4 text-left">Start</th>
               <th className="p-4 text-left">End</th>
+              <th className="p-4 text-left">Image</th>
               <th className="p-4 text-left">Status</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
@@ -102,7 +132,7 @@ export default function Dashboard() {
           <tbody>
             {events.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center p-8 text-gray-400">
+                <td colSpan={7} className="text-center p-8 text-gray-400">
                   No events created yet
                 </td>
               </tr>
@@ -115,18 +145,34 @@ export default function Dashboard() {
                   <td className="p-4 font-medium">{event.name}</td>
                   <td className="p-4">{event.location}</td>
 
+                  {/* ✅ CLEAN DATE */}
                   <td className="p-4">
                     {event.start
-                      ? format(new Date(event.start), "PPP p")
+                      ? format(new Date(event.start), "PPP")
                       : "-"}
                   </td>
 
                   <td className="p-4">
                     {event.end
-                      ? format(new Date(event.end), "PPP p")
+                      ? format(new Date(event.end), "PPP")
                       : "-"}
                   </td>
 
+                  {/* ✅ IMAGE */}
+                  <td className="p-4">
+                    {event.image ? (
+                      <img
+                        src={event.image}
+                        className="w-16 h-12 object-cover rounded"
+                      />
+                    ) : (
+                      <span className="text-xs text-gray-400">
+                        No Image
+                      </span>
+                    )}
+                  </td>
+
+                  {/* STATUS */}
                   <td className="p-4">
                     <span
                       className={`px-3 py-1 text-xs rounded-full ${
@@ -139,34 +185,31 @@ export default function Dashboard() {
                     </span>
                   </td>
 
-                  {/* ✅ CLEAN ACTIONS */}
+                  {/* ACTIONS */}
                   <td className="p-4">
-<div className="flex justify-center items-center gap-3 group">
+                    <div className="flex justify-center gap-3">
 
-  {/* MANAGE */}
-  <button
-onClick={() => router.push(`/dashboard/events/${event.id}`)
-    }
-    className="relative px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
-    hover:bg-indigo-100 hover:border-indigo-400 hover:text-indigo-800 
-    transition-all duration-200 ease-in-out 
-    transform hover:scale-105 active:scale-95 shadow-sm"
-  >
-    Manage
-  </button>
+                      <button
+                        onClick={() =>
+                          router.push(`/dashboard/events/${event.id}`)
+                        }
+                        className="px-3 py-1.5 text-xs rounded-lg border
+                        hover:bg-indigo-50 hover:text-indigo-600
+                        transition-all duration-200 hover:scale-105"
+                      >
+                        Manage
+                      </button>
 
-  {/* DELETE */}
-  <button
-    onClick={() => setDeleteId(event.id)}
-    className="relative px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
-    hover:bg-red-100 hover:border-red-400 hover:text-red-800 
-    transition-all duration-200 ease-in-out 
-    transform hover:scale-105 active:scale-95 shadow-sm"
-  >
-    Delete
-  </button>
+                      <button
+                        onClick={() => setDeleteId(event.id)}
+                        className="px-3 py-1.5 text-xs rounded-lg border
+                        hover:bg-red-50 hover:text-red-600
+                        transition-all duration-200 hover:scale-105"
+                      >
+                        Delete
+                      </button>
 
-</div>
+                    </div>
                   </td>
 
                 </tr>
@@ -215,7 +258,7 @@ onClick={() => router.push(`/dashboard/events/${event.id}`)
 
                   <Button
                     onClick={confirmDelete}
-                    className="bg-red-600 hover:bg-red-700 text-white"
+                    className="bg-red-600 text-white"
                   >
                     Delete
                   </Button>
@@ -225,6 +268,7 @@ onClick={() => router.push(`/dashboard/events/${event.id}`)
           </>
         )}
       </AnimatePresence>
+
     </div>
   );
 }

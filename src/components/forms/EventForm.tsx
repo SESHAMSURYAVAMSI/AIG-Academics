@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, Upload } from "lucide-react";
 
@@ -22,7 +22,7 @@ type EventFormData = {
   name: string;
   location: string;
   active: boolean;
-  image?: string
+  image: string;
 };
 
 type Props = {
@@ -52,20 +52,39 @@ export default function EventForm({
 }: Props) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  /* ================= HANDLERS ================= */
+  /* ================= FIX: SYNC PREVIEW (EDIT MODE) ================= */
+  useEffect(() => {
+    if (form.image) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setImagePreview(form.image);
+    }
+  }, [form.image]);
 
-const handleImageUpload = (file: File) => {
-  const reader = new FileReader();
+  /* ================= IMAGE UPLOAD ================= */
 
-  reader.onloadend = () => {
-    setForm({
-      ...form,
-      image: reader.result as string, // ✅ base64
-    });
+  const handleImageUpload = (file: File) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const result = reader.result as string;
+
+      setForm({
+        ...form,
+        image: result,
+      });
+
+      setImagePreview(result); // ✅ FIXED
+    };
+
+    reader.readAsDataURL(file);
   };
 
-  reader.readAsDataURL(file);
-};
+  /* ================= REMOVE IMAGE ================= */
+
+  const removeImage = () => {
+    setForm({ ...form, image: "" });
+    setImagePreview(null);
+  };
 
   /* ================= UI ================= */
 
@@ -73,7 +92,7 @@ const handleImageUpload = (file: File) => {
     <AnimatePresence>
       {open && (
         <>
-          {/* Overlay */}
+          {/* OVERLAY */}
           <motion.div
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             initial={{ opacity: 0 }}
@@ -82,27 +101,36 @@ const handleImageUpload = (file: File) => {
             onClick={() => setOpen(false)}
           />
 
-          {/* Drawer */}
+          {/* DRAWER */}
           <motion.div
-            className="fixed top-0 right-0 w-[420px] h-full bg-white z-50 p-6 shadow-2xl rounded-l-2xl overflow-y-auto"
+            className="fixed top-0 right-0 w-[420px] h-screen bg-white z-50 shadow-2xl flex flex-col"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
           >
-            <h2 className="text-xl font-semibold mb-6">Add Event</h2>
+            {/* HEADER */}
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-semibold">
+                Add Event
+              </h2>
+            </div>
 
-            <div className="space-y-5">
-              {/* Event Name */}
+            {/* SCROLL CONTENT */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-24">
+
+              {/* EVENT NAME */}
               <div>
                 <Label>Event Name</Label>
                 <Input
                   className="mt-2"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, name: e.target.value })
+                  }
                 />
               </div>
 
-              {/* Location */}
+              {/* LOCATION */}
               <div>
                 <Label>Location</Label>
                 <Input
@@ -114,45 +142,57 @@ const handleImageUpload = (file: File) => {
                 />
               </div>
 
-              {/* Image Upload */}
+              {/* IMAGE */}
               <div>
                 <Label>Event Image</Label>
 
-                <div className="mt-2 border-2 border-dashed rounded-xl p-4 text-center hover:bg-gray-50 transition">
-                  <label className="cursor-pointer flex flex-col items-center gap-2">
-                    <Upload className="text-gray-400" />
-                    <span className="text-sm text-gray-500">
-                      Click to upload image
-                    </span>
+                <div className="mt-2 border-2 border-dashed rounded-xl p-4 text-center hover:bg-gray-50 transition relative">
 
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageUpload(file);
-                      }}
-                    />
-                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                  />
 
-                  {imagePreview && (
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="mt-4 w-full h-40 object-cover rounded-lg"
-                    />
+                  {!imagePreview ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="text-gray-400" />
+                      <span className="text-sm text-gray-500">
+                        Click to upload image
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="mt-2 w-full h-40 object-cover rounded-lg"
+                      />
+
+                      <button
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Start Date */}
+              {/* START DATE */}
               <div>
                 <Label>Start Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <button className="w-full mt-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">
-                      {startDate ? format(startDate, "PPP") : "Pick start date"}
+                      {startDate
+                        ? format(startDate, "PPP")
+                        : "Pick start date"}
                       <CalendarIcon size={16} className="text-gray-400" />
                     </button>
                   </PopoverTrigger>
@@ -167,13 +207,15 @@ const handleImageUpload = (file: File) => {
                 </Popover>
               </div>
 
-              {/* End Date */}
+              {/* END DATE */}
               <div>
                 <Label>End Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <button className="w-full mt-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">
-                      {endDate ? format(endDate, "PPP") : "Pick end date"}
+                      {endDate
+                        ? format(endDate, "PPP")
+                        : "Pick end date"}
                       <CalendarIcon size={16} className="text-gray-400" />
                     </button>
                   </PopoverTrigger>
@@ -188,7 +230,7 @@ const handleImageUpload = (file: File) => {
                 </Popover>
               </div>
 
-              {/* Status */}
+              {/* STATUS */}
               <div className="flex items-center justify-between">
                 <Label>Status</Label>
                 <Switch
@@ -199,7 +241,10 @@ const handleImageUpload = (file: File) => {
                 />
               </div>
 
-              {/* Submit */}
+            </div>
+
+            {/* FOOTER */}
+            <div className="p-6 border-t bg-white">
               <Button onClick={handleSubmit} className="w-full rounded-xl">
                 Create Event
               </Button>
