@@ -69,6 +69,7 @@ export default function EventLayout({
     setOpenCommittee(pathname.includes("committee"));
     setOpenExhibitors(pathname.includes("exhibitors"));
     setOpenAgenda(pathname.includes("agenda"));
+    setOpenSpeaker(pathname.includes("speaker"));
   }, [pathname]);
 
   const isActive = (path: string) =>
@@ -202,8 +203,10 @@ export default function EventLayout({
           <SidebarItem
             label="Download"
             icon={Download}
-            active={pathname === `/dashboard/events/${id}/downloads`}
-            onClick={() => router.push(`/dashboard/events/${id}/downloads`)}
+            active={isActive("downloads")}
+            onClick={() =>
+              router.push(`/dashboard/events/${id}/downloads`)
+            }
           />
 
           {/* Quicklink*/}
