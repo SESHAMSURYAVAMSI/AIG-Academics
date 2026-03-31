@@ -18,7 +18,6 @@ export default function EventInfoTable({
 }: Props) {
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
       {/* HEADER */}
       <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
         <h2 className="text-lg font-semibold">Event Info</h2>
@@ -32,6 +31,7 @@ export default function EventInfoTable({
         <thead className="bg-gray-100 text-gray-600">
           <tr>
             <th className="p-4 text-left">Title</th>
+            <th className="p-4 text-left">Description</th> {/* ✅ NEW */}
             <th className="p-4 text-left">Image</th>
             <th className="p-4 text-left">Status</th>
             <th className="p-4 text-center">Actions</th>
@@ -41,16 +41,30 @@ export default function EventInfoTable({
         <tbody>
           {items.length === 0 ? (
             <tr>
-              <td colSpan={4} className="text-center p-6 text-gray-400">
+              <td colSpan={5} className="text-center p-6 text-gray-400">
                 No event info added
               </td>
             </tr>
           ) : (
             items.map((item) => (
               <tr key={item.id} className="border-t hover:bg-gray-50">
-
+                {/* TITLE */}
                 <td className="p-4 font-medium">{item.title}</td>
 
+                {/* ✅ DESCRIPTION */}
+                <td className="p-4 max-w-xs">
+                  {item.description ? (
+                    <p className="text-gray-600 line-clamp-2">
+                      {item.description}
+                    </p>
+                  ) : (
+                    <span className="text-xs text-gray-400">
+                      No Description
+                    </span>
+                  )}
+                </td>
+
+                {/* IMAGE */}
                 <td className="p-4">
                   {item.image ? (
                     <img
@@ -62,6 +76,7 @@ export default function EventInfoTable({
                   )}
                 </td>
 
+                {/* STATUS */}
                 <td className="p-4">
                   <span
                     className={`px-3 py-1 text-xs rounded-full ${
@@ -74,9 +89,9 @@ export default function EventInfoTable({
                   </span>
                 </td>
 
+                {/* ACTIONS */}
                 <td className="p-4">
                   <div className="flex justify-center gap-3">
-
                     <button
                       onClick={() => onEdit(item)}
                       className="px-3 py-1.5 text-xs rounded-lg border
@@ -94,10 +109,8 @@ export default function EventInfoTable({
                     >
                       Delete
                     </button>
-
                   </div>
                 </td>
-
               </tr>
             ))
           )}

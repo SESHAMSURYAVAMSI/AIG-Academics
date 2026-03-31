@@ -7,10 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-import {
-  SpeakerMemberFormType,
-  SpeakerType,
-} from "@/types/speakerMember";
+import { SpeakerMemberFormType, SpeakerType } from "@/types/speakerMember";
 
 type Props = {
   open: boolean;
@@ -51,14 +48,11 @@ export default function SpeakerMemberForm({
             </h2>
 
             <div className="space-y-5">
-
               <div>
                 <Label>Name</Label>
                 <Input
                   value={form.name}
-                  onChange={(e) =>
-                    setForm({ ...form, name: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
 
@@ -124,9 +118,7 @@ export default function SpeakerMemberForm({
                 <select
                   className="w-full border rounded-md p-2"
                   value={form.type}
-                  onChange={(e) =>
-                    setForm({ ...form, type: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, type: e.target.value })}
                 >
                   <option value="">Select Type</option>
                   {types
@@ -143,9 +135,7 @@ export default function SpeakerMemberForm({
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
-                  onCheckedChange={(v) =>
-                    setForm({ ...form, active: v })
-                  }
+                  onCheckedChange={(v) => setForm({ ...form, active: v })}
                 />
               </div>
 

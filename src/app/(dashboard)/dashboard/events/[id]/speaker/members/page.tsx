@@ -47,11 +47,7 @@ export default function Page() {
     if (!form.name || !form.type) return;
 
     if (editingId) {
-      save(
-        data.map((d) =>
-          d.id === editingId ? { ...d, ...form } : d
-        )
-      );
+      save(data.map((d) => (d.id === editingId ? { ...d, ...form } : d)));
     } else {
       save([...data, { id: Date.now(), ...form }]);
     }
@@ -71,7 +67,6 @@ export default function Page() {
 
   return (
     <div className="p-6">
-
       <SpeakerMemberTable
         data={data}
         onAdd={() => {

@@ -59,15 +59,12 @@ export default function EventInfoForm({
 
             {/* SCROLLABLE CONTENT */}
             <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-24">
-
               {/* TITLE */}
               <div>
                 <Label>Title</Label>
                 <Input
                   value={form.title}
-                  onChange={(e) =>
-                    setForm({ ...form, title: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
               </div>
 
@@ -130,12 +127,9 @@ export default function EventInfoForm({
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
-                  onCheckedChange={(val) =>
-                    setForm({ ...form, active: val })
-                  }
+                  onCheckedChange={(val) => setForm({ ...form, active: val })}
                 />
               </div>
-
             </div>
 
             {/* FOOTER (fixed button) */}
@@ -144,7 +138,6 @@ export default function EventInfoForm({
                 {editingId ? "Update" : "Create"}
               </Button>
             </div>
-
           </motion.div>
         </>
       )}

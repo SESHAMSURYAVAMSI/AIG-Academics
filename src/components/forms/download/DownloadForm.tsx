@@ -60,14 +60,11 @@ export default function DownloadForm({
             </h2>
 
             <div className="space-y-4">
-
               <div>
                 <Label>Title</Label>
                 <Input
                   value={form.title}
-                  onChange={(e) =>
-                    setForm({ ...form, title: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
               </div>
 
@@ -86,9 +83,7 @@ export default function DownloadForm({
                   />
 
                   <Upload className="mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-600">
-                    Upload file
-                  </p>
+                  <p className="text-sm text-gray-600">Upload file</p>
 
                   {form.fileName && (
                     <p className="text-xs text-green-600 mt-2">
@@ -102,16 +97,13 @@ export default function DownloadForm({
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
-                  onCheckedChange={(val) =>
-                    setForm({ ...form, active: val })
-                  }
+                  onCheckedChange={(val) => setForm({ ...form, active: val })}
                 />
               </div>
 
               <Button onClick={handleSubmit} className="w-full">
                 Save
               </Button>
-
             </div>
           </motion.div>
         </>

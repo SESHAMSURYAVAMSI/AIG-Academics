@@ -110,23 +110,18 @@ export default function EventForm({
           >
             {/* HEADER */}
             <div className="p-6 border-b">
-              <h2 className="text-xl font-semibold">
-                Add Event
-              </h2>
+              <h2 className="text-xl font-semibold">Add Event</h2>
             </div>
 
             {/* SCROLL CONTENT */}
             <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-24">
-
               {/* EVENT NAME */}
               <div>
                 <Label>Event Name</Label>
                 <Input
                   className="mt-2"
                   value={form.name}
-                  onChange={(e) =>
-                    setForm({ ...form, name: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
 
@@ -147,7 +142,6 @@ export default function EventForm({
                 <Label>Event Image</Label>
 
                 <div className="mt-2 border-2 border-dashed rounded-xl p-4 text-center hover:bg-gray-50 transition relative">
-
                   <input
                     type="file"
                     accept="image/*"
@@ -190,9 +184,7 @@ export default function EventForm({
                 <Popover>
                   <PopoverTrigger asChild>
                     <button className="w-full mt-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">
-                      {startDate
-                        ? format(startDate, "PPP")
-                        : "Pick start date"}
+                      {startDate ? format(startDate, "PPP") : "Pick start date"}
                       <CalendarIcon size={16} className="text-gray-400" />
                     </button>
                   </PopoverTrigger>
@@ -213,9 +205,7 @@ export default function EventForm({
                 <Popover>
                   <PopoverTrigger asChild>
                     <button className="w-full mt-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">
-                      {endDate
-                        ? format(endDate, "PPP")
-                        : "Pick end date"}
+                      {endDate ? format(endDate, "PPP") : "Pick end date"}
                       <CalendarIcon size={16} className="text-gray-400" />
                     </button>
                   </PopoverTrigger>
@@ -240,7 +230,6 @@ export default function EventForm({
                   }
                 />
               </div>
-
             </div>
 
             {/* FOOTER */}

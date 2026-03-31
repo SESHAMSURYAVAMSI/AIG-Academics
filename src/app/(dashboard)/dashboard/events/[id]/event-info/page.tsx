@@ -71,16 +71,9 @@ export default function EventInfoPage() {
     if (!form.title.trim()) return;
 
     if (editingId) {
-      saveItems(
-        items.map((i) =>
-          i.id === editingId ? { ...i, ...form } : i
-        )
-      );
+      saveItems(items.map((i) => (i.id === editingId ? { ...i, ...form } : i)));
     } else {
-      saveItems([
-        ...items,
-        { id: Date.now(), ...form },
-      ]);
+      saveItems([...items, { id: Date.now(), ...form }]);
     }
 
     resetForm();
@@ -113,7 +106,6 @@ export default function EventInfoPage() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       {/* TABLE */}
       <EventInfoTable
         items={items}
@@ -142,9 +134,7 @@ export default function EventInfoPage() {
       {deleteId && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-[320px]">
-            <h2 className="text-lg font-semibold mb-3">
-              Delete Event Info?
-            </h2>
+            <h2 className="text-lg font-semibold mb-3">Delete Event Info?</h2>
 
             <p className="text-sm text-gray-500 mb-5">
               This action cannot be undone.
@@ -155,10 +145,7 @@ export default function EventInfoPage() {
                 Cancel
               </Button>
 
-              <Button
-                onClick={confirmDelete}
-                className="bg-red-500 text-white"
-              >
+              <Button onClick={confirmDelete} className="bg-red-500 text-white">
                 Delete
               </Button>
             </div>

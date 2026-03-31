@@ -7,7 +7,6 @@ import QuicklinkTable from "@/components/forms/quicklinks/QuicklinkTable";
 import QuicklinkForm from "@/components/forms/quicklinks/QuicklinkForm";
 import { Quicklink, QuicklinkFormType } from "@/types/quicklink";
 
-
 export default function Page() {
   const params = useParams();
   const id = params?.id as string;
@@ -20,10 +19,10 @@ export default function Page() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [form, setForm] = useState<QuicklinkFormType>({
-  title: "",
-  link: "",
-  active: true,
-});
+    title: "",
+    link: "",
+    active: true,
+  });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -39,11 +38,7 @@ export default function Page() {
     if (!form.title || !form.link) return;
 
     if (editingId) {
-      save(
-        data.map((d) =>
-          d.id === editingId ? { ...d, ...form } : d
-        )
-      );
+      save(data.map((d) => (d.id === editingId ? { ...d, ...form } : d)));
     } else {
       save([...data, { id: Date.now(), ...form }]);
     }
@@ -55,7 +50,6 @@ export default function Page() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       <QuicklinkTable
         data={data}
         onAdd={() => {

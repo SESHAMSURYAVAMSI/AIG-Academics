@@ -51,7 +51,7 @@ export default function SpeakerType() {
 
     if (editingId) {
       const updated = types.map((t) =>
-        t.id === editingId ? { ...t, ...form } : t
+        t.id === editingId ? { ...t, ...form } : t,
       );
       saveData(updated);
     } else {
@@ -81,7 +81,6 @@ export default function SpeakerType() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Speaker Types</h1>
@@ -178,9 +177,7 @@ export default function SpeakerType() {
                   <Label>Speaker Type</Label>
                   <Input
                     value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
 
@@ -188,9 +185,7 @@ export default function SpeakerType() {
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val) =>
-                      setForm({ ...form, active: val })
-                    }
+                    onCheckedChange={(val) => setForm({ ...form, active: val })}
                   />
                 </div>
 

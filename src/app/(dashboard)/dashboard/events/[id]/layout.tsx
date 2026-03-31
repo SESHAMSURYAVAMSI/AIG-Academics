@@ -20,7 +20,6 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Link } from "lucide-react";
 
-
 /* ================= TYPES ================= */
 
 type SidebarItemProps = {
@@ -204,9 +203,7 @@ export default function EventLayout({
             label="Download"
             icon={Download}
             active={isActive("downloads")}
-            onClick={() =>
-              router.push(`/dashboard/events/${id}/downloads`)
-            }
+            onClick={() => router.push(`/dashboard/events/${id}/downloads`)}
           />
 
           {/* Quicklink*/}

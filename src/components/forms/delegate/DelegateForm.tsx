@@ -53,15 +53,12 @@ export default function DelegateForm({
             </h2>
 
             <div className="space-y-5">
-
               {/* NAME */}
               <div>
                 <Label>Name</Label>
                 <Input
                   value={form.name}
-                  onChange={(e) =>
-                    setForm({ ...form, name: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
 
@@ -71,9 +68,7 @@ export default function DelegateForm({
                 <Input
                   type="email"
                   value={form.email}
-                  onChange={(e) =>
-                    setForm({ ...form, email: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
               </div>
 
@@ -93,7 +88,6 @@ export default function DelegateForm({
                 <Label>Image</Label>
 
                 <div className="mt-2 border-2 border-dashed rounded-xl p-6 text-center relative hover:border-indigo-400 transition">
-
                   <input
                     type="file"
                     accept="image/*"
@@ -125,9 +119,7 @@ export default function DelegateForm({
                       />
 
                       <button
-                        onClick={() =>
-                          setForm({ ...form, image: "" })
-                        }
+                        onClick={() => setForm({ ...form, image: "" })}
                         className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded"
                       >
                         Remove
@@ -142,9 +134,7 @@ export default function DelegateForm({
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
-                  onCheckedChange={(val) =>
-                    setForm({ ...form, active: val })
-                  }
+                  onCheckedChange={(val) => setForm({ ...form, active: val })}
                 />
               </div>
 

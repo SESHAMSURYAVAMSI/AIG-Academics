@@ -18,7 +18,6 @@ export default function DelegateTable({
 }: Props) {
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
       {/* HEADER */}
       {/* <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
         <h2 className="text-lg font-semibold text-gray-800">
@@ -55,14 +54,9 @@ export default function DelegateTable({
             </tr>
           ) : (
             delegates.map((d) => (
-              <tr
-                key={d.id}
-                className="border-t hover:bg-gray-50 transition"
-              >
+              <tr key={d.id} className="border-t hover:bg-gray-50 transition">
                 {/* NAME */}
-                <td className="p-4 font-medium text-gray-800">
-                  {d.name}
-                </td>
+                <td className="p-4 font-medium text-gray-800">{d.name}</td>
 
                 {/* IMAGE */}
                 <td className="p-4">
@@ -73,21 +67,15 @@ export default function DelegateTable({
                       className="w-14 h-10 object-cover rounded-md border"
                     />
                   ) : (
-                    <span className="text-xs text-gray-400">
-                      No Image
-                    </span>
+                    <span className="text-xs text-gray-400">No Image</span>
                   )}
                 </td>
 
                 {/* DESIGNATION */}
-                <td className="p-4 text-gray-600">
-                  {d.designation}
-                </td>
+                <td className="p-4 text-gray-600">{d.designation}</td>
 
                 {/* EMAIL */}
-                <td className="p-4 text-gray-600">
-                  {d.email}
-                </td>
+                <td className="p-4 text-gray-600">{d.email}</td>
 
                 {/* STATUS */}
                 <td className="p-4">
@@ -105,7 +93,6 @@ export default function DelegateTable({
                 {/* ACTIONS */}
                 <td className="p-4">
                   <div className="flex justify-center gap-3">
-
                     {/* EDIT */}
                     <button
                       onClick={() => onEdit(d)}
@@ -133,7 +120,6 @@ export default function DelegateTable({
                     >
                       Delete
                     </button>
-
                   </div>
                 </td>
               </tr>

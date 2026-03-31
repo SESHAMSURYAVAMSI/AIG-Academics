@@ -40,9 +40,7 @@ export default function Page() {
     if (!form.title) return;
 
     if (editingId) {
-      save(data.map((d) =>
-        d.id === editingId ? { ...d, ...form } : d
-      ));
+      save(data.map((d) => (d.id === editingId ? { ...d, ...form } : d)));
     } else {
       save([...data, { id: Date.now(), ...form }]);
     }
@@ -54,7 +52,6 @@ export default function Page() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       <DownloadTable
         data={data}
         onAdd={() => {
@@ -85,9 +82,7 @@ export default function Page() {
             <p>Are you sure?</p>
 
             <div className="flex gap-3 mt-4 justify-end">
-              <button onClick={() => setDeleteId(null)}>
-                Cancel
-              </button>
+              <button onClick={() => setDeleteId(null)}>Cancel</button>
 
               <button
                 onClick={() => {
@@ -102,7 +97,6 @@ export default function Page() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

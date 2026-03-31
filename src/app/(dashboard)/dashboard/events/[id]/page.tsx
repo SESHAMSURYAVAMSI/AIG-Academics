@@ -15,7 +15,7 @@ type EventType = {
   name: string;
   location: string;
   start: string; // yyyy-MM-dd
-  end: string;   // yyyy-MM-dd
+  end: string; // yyyy-MM-dd
   active: boolean;
   image?: string;
 };
@@ -52,7 +52,7 @@ export default function EventPage() {
 
   const handleChange = <K extends keyof EventType>(
     key: K,
-    value: EventType[K]
+    value: EventType[K],
   ) => {
     setEvent((prev) => {
       if (!prev) return prev;
@@ -68,18 +68,14 @@ export default function EventPage() {
     reader.onloadend = () => {
       const result = reader.result as string;
 
-      setEvent((prev) =>
-        prev ? { ...prev, image: result } : prev
-      );
+      setEvent((prev) => (prev ? { ...prev, image: result } : prev));
     };
 
     reader.readAsDataURL(file);
   };
 
   const removeImage = () => {
-    setEvent((prev) =>
-      prev ? { ...prev, image: "" } : prev
-    );
+    setEvent((prev) => (prev ? { ...prev, image: "" } : prev));
   };
 
   /* ================= SAVE ================= */
@@ -99,7 +95,7 @@ export default function EventPage() {
             start: event.start || "",
             end: event.end || "",
           }
-        : e
+        : e,
     );
 
     localStorage.setItem("events", JSON.stringify(updated));
@@ -124,7 +120,6 @@ export default function EventPage() {
   return (
     <div className="p-6 flex justify-center bg-gray-50 min-h-screen">
       <div className="w-full max-w-2xl bg-white border rounded-xl shadow-sm p-6 space-y-6">
-
         <h1 className="text-2xl font-semibold">Event Details</h1>
 
         {/* IMAGE */}
@@ -143,9 +138,7 @@ export default function EventPage() {
             />
 
             {!event.image ? (
-              <p className="text-sm text-gray-500">
-                Click to upload image
-              </p>
+              <p className="text-sm text-gray-500">Click to upload image</p>
             ) : (
               <div className="relative">
                 <img
@@ -169,9 +162,7 @@ export default function EventPage() {
           <Label>Event Name</Label>
           <Input
             value={event.name}
-            onChange={(e) =>
-              handleChange("name", e.target.value)
-            }
+            onChange={(e) => handleChange("name", e.target.value)}
           />
         </div>
 
@@ -180,9 +171,7 @@ export default function EventPage() {
           <Label>Location</Label>
           <Input
             value={event.location}
-            onChange={(e) =>
-              handleChange("location", e.target.value)
-            }
+            onChange={(e) => handleChange("location", e.target.value)}
           />
         </div>
 
@@ -193,9 +182,7 @@ export default function EventPage() {
             <Input
               type="date"
               value={event.start || ""}
-              onChange={(e) =>
-                handleChange("start", e.target.value)
-              }
+              onChange={(e) => handleChange("start", e.target.value)}
             />
           </div>
 
@@ -204,9 +191,7 @@ export default function EventPage() {
             <Input
               type="date"
               value={event.end || ""}
-              onChange={(e) =>
-                handleChange("end", e.target.value)
-              }
+              onChange={(e) => handleChange("end", e.target.value)}
             />
           </div>
         </div>
@@ -216,9 +201,7 @@ export default function EventPage() {
           <Label>Status</Label>
           <Switch
             checked={event.active}
-            onCheckedChange={(val) =>
-              handleChange("active", val)
-            }
+            onCheckedChange={(val) => handleChange("active", val)}
           />
         </div>
 

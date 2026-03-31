@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { QuicklinkFormType } from "@/types/quicklink";
 
-
 type Props = {
   open: boolean;
   setOpen: (v: boolean) => void;
@@ -45,14 +44,11 @@ export default function QuicklinkForm({
             </h2>
 
             <div className="space-y-5">
-
               <div>
                 <Label>Title</Label>
                 <Input
                   value={form.title}
-                  onChange={(e) =>
-                    setForm({ ...form, title: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
               </div>
 
@@ -61,9 +57,7 @@ export default function QuicklinkForm({
                 <Input
                   placeholder="https://example.com"
                   value={form.link}
-                  onChange={(e) =>
-                    setForm({ ...form, link: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, link: e.target.value })}
                 />
               </div>
 
@@ -71,16 +65,13 @@ export default function QuicklinkForm({
                 <Label>Status</Label>
                 <Switch
                   checked={form.active}
-                  onCheckedChange={(val) =>
-                    setForm({ ...form, active: val })
-                  }
+                  onCheckedChange={(val) => setForm({ ...form, active: val })}
                 />
               </div>
 
               <Button onClick={handleSubmit} className="w-full">
                 {editingId ? "Update" : "Create"}
               </Button>
-
             </div>
           </motion.div>
         </>

@@ -85,9 +85,7 @@ export default function SessionDetailsPage() {
 
     if (editingId) {
       saveData(
-        sessions.map((s) =>
-          s.id === editingId ? { ...s, ...form } : s
-        )
+        sessions.map((s) => (s.id === editingId ? { ...s, ...form } : s)),
       );
     } else {
       saveData([...sessions, { id: Date.now(), ...form }]);
@@ -123,7 +121,6 @@ export default function SessionDetailsPage() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Session Details</h1>
@@ -133,7 +130,6 @@ export default function SessionDetailsPage() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Title</th>
@@ -156,19 +152,22 @@ export default function SessionDetailsPage() {
             ) : (
               sessions.map((s) => (
                 <tr key={s.id} className="border-t hover:bg-gray-50 group">
-
                   <td className="p-4 font-medium">{s.title}</td>
                   <td className="p-4">{s.hall}</td>
-                  <td className="p-4">{s.start} - {s.end}</td>
+                  <td className="p-4">
+                    {s.start} - {s.end}
+                  </td>
                   <td className="p-4">{s.track}</td>
                   <td className="p-4">{s.sessionDate}</td>
 
                   <td className="p-4">
-                    <span className={`px-3 py-1 text-xs rounded-full ${
-                      s.active
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-200 text-gray-600"
-                    }`}>
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full ${
+                        s.active
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
                       {s.active ? "Active" : "Inactive"}
                     </span>
                   </td>
@@ -176,7 +175,6 @@ export default function SessionDetailsPage() {
                   {/* ✅ PREMIUM ACTIONS */}
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-4">
-
                       <button
                         onClick={() => handleEdit(s)}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
@@ -194,10 +192,8 @@ export default function SessionDetailsPage() {
                       >
                         Delete
                       </button>
-
                     </div>
                   </td>
-
                 </tr>
               ))
             )}
@@ -205,12 +201,14 @@ export default function SessionDetailsPage() {
         </table>
       </div>
 
-
       {/* DRAWER */}
       <AnimatePresence>
         {open && (
           <>
-            <motion.div className="fixed inset-0 bg-black/30" onClick={() => setOpen(false)} />
+            <motion.div
+              className="fixed inset-0 bg-black/30"
+              onClick={() => setOpen(false)}
+            />
 
             <motion.div
               className="fixed top-0 right-0 w-[420px] h-full bg-white p-6 shadow-xl overflow-y-auto"
@@ -223,36 +221,64 @@ export default function SessionDetailsPage() {
               </h2>
 
               <div className="space-y-4">
-
                 <div>
                   <Label>Title</Label>
-                  <Input value={form.title} onChange={(e)=>setForm({...form,title:e.target.value})}/>
+                  <Input
+                    value={form.title}
+                    onChange={(e) =>
+                      setForm({ ...form, title: e.target.value })
+                    }
+                  />
                 </div>
 
                 <div>
                   <Label>Hall</Label>
-                  <Input value={form.hall} onChange={(e)=>setForm({...form,hall:e.target.value})}/>
+                  <Input
+                    value={form.hall}
+                    onChange={(e) => setForm({ ...form, hall: e.target.value })}
+                  />
                 </div>
 
                 <div>
                   <Label>Date</Label>
-                  <Input type="date" value={form.date} onChange={(e)=>setForm({...form,date:e.target.value})}/>
+                  <Input
+                    type="date"
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Start Time</Label>
-                    <Input type="time" value={form.start} onChange={(e)=>setForm({...form,start:e.target.value})}/>
+                    <Input
+                      type="time"
+                      value={form.start}
+                      onChange={(e) =>
+                        setForm({ ...form, start: e.target.value })
+                      }
+                    />
                   </div>
                   <div>
                     <Label>End Time</Label>
-                    <Input type="time" value={form.end} onChange={(e)=>setForm({...form,end:e.target.value})}/>
+                    <Input
+                      type="time"
+                      value={form.end}
+                      onChange={(e) =>
+                        setForm({ ...form, end: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
 
                 <div>
                   <Label>Description</Label>
-                  <Textarea value={form.description} onChange={(e)=>setForm({...form,description:e.target.value})}/>
+                  <Textarea
+                    value={form.description}
+                    onChange={(e) =>
+                      setForm({ ...form, description: e.target.value })
+                    }
+                  />
                 </div>
 
                 <div>
@@ -260,12 +286,16 @@ export default function SessionDetailsPage() {
                   <select
                     className="w-full border rounded-md p-2"
                     value={form.sessionDate}
-                    onChange={(e)=>setForm({...form,sessionDate:e.target.value})}
+                    onChange={(e) =>
+                      setForm({ ...form, sessionDate: e.target.value })
+                    }
                   >
                     <option value="">Select</option>
-                    {sessionDates.filter(s=>s.active).map(s=>(
-                      <option key={s.id}>{s.name}</option>
-                    ))}
+                    {sessionDates
+                      .filter((s) => s.active)
+                      .map((s) => (
+                        <option key={s.id}>{s.name}</option>
+                      ))}
                   </select>
                 </div>
 
@@ -274,12 +304,16 @@ export default function SessionDetailsPage() {
                   <select
                     className="w-full border rounded-md p-2"
                     value={form.track}
-                    onChange={(e)=>setForm({...form,track:e.target.value})}
+                    onChange={(e) =>
+                      setForm({ ...form, track: e.target.value })
+                    }
                   >
                     <option value="">Select</option>
-                    {tracks.filter(t=>t.active).map(t=>(
-                      <option key={t.id}>{t.name}</option>
-                    ))}
+                    {tracks
+                      .filter((t) => t.active)
+                      .map((t) => (
+                        <option key={t.id}>{t.name}</option>
+                      ))}
                   </select>
                 </div>
 
@@ -287,7 +321,7 @@ export default function SessionDetailsPage() {
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val)=>setForm({...form,active:val})}
+                    onCheckedChange={(val) => setForm({ ...form, active: val })}
                   />
                 </div>
 
@@ -309,8 +343,15 @@ export default function SessionDetailsPage() {
               <p className="text-sm text-gray-500 mb-4">Are you sure?</p>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={()=>setDeleteId(null)}>Cancel</Button>
-                <Button className="bg-red-500 text-white" onClick={confirmDelete}>Delete</Button>
+                <Button variant="outline" onClick={() => setDeleteId(null)}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-red-500 text-white"
+                  onClick={confirmDelete}
+                >
+                  Delete
+                </Button>
               </div>
             </motion.div>
           </motion.div>

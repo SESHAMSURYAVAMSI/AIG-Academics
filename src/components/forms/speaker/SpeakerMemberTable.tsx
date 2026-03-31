@@ -18,7 +18,6 @@ export default function SpeakerMemberTable({
 }: Props) {
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
       <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
         <h2 className="text-lg font-semibold">Speaker Members</h2>
         <Button onClick={onAdd} className="bg-black text-white">
@@ -49,7 +48,6 @@ export default function SpeakerMemberTable({
           ) : (
             data.map((d) => (
               <tr key={d.id} className="border-t hover:bg-gray-50">
-
                 <td className="p-4">{d.name}</td>
                 <td className="p-4">{d.designation}</td>
                 <td className="p-4">{d.type}</td>
@@ -63,20 +61,20 @@ export default function SpeakerMemberTable({
                   )}
                 </td>
 
-                <td className="p-4 max-w-[200px] truncate">
-                  {d.description}
-                </td>
+                <td className="p-4 max-w-[200px] truncate">{d.description}</td>
 
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded ${
-                    d.active ? "bg-green-100 text-green-600" : "bg-gray-200"
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded ${
+                      d.active ? "bg-green-100 text-green-600" : "bg-gray-200"
+                    }`}
+                  >
                     {d.active ? "Active" : "Inactive"}
                   </span>
                 </td>
 
                 <td className="p-4 ">
-                                    <div className="flex justify-center gap-4">
+                  <div className="flex justify-center gap-4">
                     <button
                       onClick={() => onEdit(d)}
                       className="px-3 py-1.5 text-xs rounded-lg border hover:bg-indigo-50 hover:text-indigo-600"
@@ -92,7 +90,6 @@ export default function SpeakerMemberTable({
                     </button>
                   </div>
                 </td>
-
               </tr>
             ))
           )}

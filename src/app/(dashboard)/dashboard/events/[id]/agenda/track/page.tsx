@@ -65,11 +65,7 @@ export default function TrackPage() {
     if (!form.name || !form.sessionDate) return;
 
     if (editingId) {
-      saveData(
-        tracks.map((t) =>
-          t.id === editingId ? { ...t, ...form } : t
-        )
-      );
+      saveData(tracks.map((t) => (t.id === editingId ? { ...t, ...form } : t)));
     } else {
       saveData([...tracks, { id: Date.now(), ...form }]);
     }
@@ -104,7 +100,6 @@ export default function TrackPage() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Tracks</h1>
@@ -114,7 +109,6 @@ export default function TrackPage() {
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Track Name</th>
@@ -135,7 +129,6 @@ export default function TrackPage() {
             ) : (
               tracks.map((t) => (
                 <tr key={t.id} className="border-t hover:bg-gray-50 group">
-
                   <td className="p-4 font-medium">{t.name}</td>
 
                   <td className="p-4">
@@ -151,11 +144,13 @@ export default function TrackPage() {
                   <td className="p-4">{t.sessionDate}</td>
 
                   <td className="p-4">
-                    <span className={`px-3 py-1 text-xs rounded-full ${
-                      t.active
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-200 text-gray-600"
-                    }`}>
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full ${
+                        t.active
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
                       {t.active ? "Active" : "Inactive"}
                     </span>
                   </td>
@@ -163,7 +158,6 @@ export default function TrackPage() {
                   {/* ✅ PREMIUM ACTIONS */}
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-4">
-
                       <button
                         onClick={() => handleEdit(t)}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white 
@@ -181,10 +175,8 @@ export default function TrackPage() {
                       >
                         Delete
                       </button>
-
                     </div>
                   </td>
-
                 </tr>
               ))
             )}
@@ -212,14 +204,11 @@ export default function TrackPage() {
               </h2>
 
               <div className="space-y-5">
-
                 <div>
                   <Label>Track Name</Label>
                   <Input
                     value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
 
@@ -258,9 +247,7 @@ export default function TrackPage() {
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val) =>
-                      setForm({ ...form, active: val })
-                    }
+                    onCheckedChange={(val) => setForm({ ...form, active: val })}
                   />
                 </div>
 
@@ -278,9 +265,7 @@ export default function TrackPage() {
         {deleteId && (
           <motion.div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
             <motion.div className="bg-white p-6 rounded-xl shadow-lg w-[300px]">
-              <h2 className="text-lg font-semibold mb-3">
-                Delete Track?
-              </h2>
+              <h2 className="text-lg font-semibold mb-3">Delete Track?</h2>
 
               <p className="text-sm text-gray-500 mb-5">
                 Are you sure you want to delete this?
@@ -291,7 +276,10 @@ export default function TrackPage() {
                   Cancel
                 </Button>
 
-                <Button className="bg-red-500 text-white" onClick={confirmDelete}>
+                <Button
+                  className="bg-red-500 text-white"
+                  onClick={confirmDelete}
+                >
                   Delete
                 </Button>
               </div>

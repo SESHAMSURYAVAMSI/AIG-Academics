@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Quicklink } from "@/types/quicklink";
 
-
 type Props = {
   data: Quicklink[];
   onAdd: () => void;
@@ -19,7 +18,6 @@ export default function QuicklinkTable({
 }: Props) {
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
       {/* HEADER */}
       <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
         <h2 className="text-lg font-semibold">Quicklinks</h2>
@@ -50,7 +48,6 @@ export default function QuicklinkTable({
           ) : (
             data.map((q) => (
               <tr key={q.id} className="border-t hover:bg-gray-50">
-
                 <td className="p-4 font-medium">{q.title}</td>
 
                 <td className="p-4 text-blue-600 underline">
@@ -73,7 +70,6 @@ export default function QuicklinkTable({
 
                 <td className="p-4">
                   <div className="flex justify-center gap-3">
-
                     <button
                       onClick={() => onEdit(q)}
                       className="px-3 py-1.5 text-xs rounded-lg border
@@ -91,10 +87,8 @@ export default function QuicklinkTable({
                     >
                       Delete
                     </button>
-
                   </div>
                 </td>
-
               </tr>
             ))
           )}

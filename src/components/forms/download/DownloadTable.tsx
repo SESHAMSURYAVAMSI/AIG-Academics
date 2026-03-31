@@ -19,14 +19,11 @@ export default function DownloadTable({
 }: Props) {
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
       {/* HEADER */}
       <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
         <h2 className="text-lg font-semibold">Downloads</h2>
 
-        <Button onClick={onAdd}>
-          + Add Download
-        </Button>
+        <Button onClick={onAdd}>+ Add Download</Button>
       </div>
 
       {/* TABLE */}
@@ -50,7 +47,6 @@ export default function DownloadTable({
           ) : (
             data.map((d) => (
               <tr key={d.id} className="border-t hover:bg-gray-50">
-
                 <td className="p-4">{d.title}</td>
 
                 <td className="p-4">
@@ -82,7 +78,6 @@ export default function DownloadTable({
 
                 <td className="p-4">
                   <div className="flex justify-center gap-3">
-
                     <button
                       onClick={() => onEdit(d)}
                       className="px-3 py-1.5 text-xs border rounded-lg
@@ -98,10 +93,8 @@ export default function DownloadTable({
                     >
                       Delete
                     </button>
-
                   </div>
                 </td>
-
               </tr>
             ))
           )}

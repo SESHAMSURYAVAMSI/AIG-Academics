@@ -52,9 +52,7 @@ export default function SessionDatePage() {
     if (!form.name) return;
 
     if (editingId) {
-      saveData(
-        data.map((d) => (d.id === editingId ? { ...d, ...form } : d))
-      );
+      saveData(data.map((d) => (d.id === editingId ? { ...d, ...form } : d)));
     } else {
       saveData([...data, { id: Date.now(), ...form }]);
     }
@@ -82,20 +80,16 @@ export default function SessionDatePage() {
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Session Dates</h1>
 
-        <Button onClick={() => setOpen(true)}>
-          + Add Session Date
-        </Button>
+        <Button onClick={() => setOpen(true)}>+ Add Session Date</Button>
       </div>
 
       {/* TABLE */}
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-4 text-left">Name</th>
@@ -114,8 +108,10 @@ export default function SessionDatePage() {
               </tr>
             ) : (
               data.map((d) => (
-                <tr key={d.id} className="border-t hover:bg-gray-50 group transition">
-
+                <tr
+                  key={d.id}
+                  className="border-t hover:bg-gray-50 group transition"
+                >
                   <td className="p-4 font-medium">{d.name}</td>
 
                   {/* COLOR */}
@@ -145,7 +141,6 @@ export default function SessionDatePage() {
                   {/* ✅ PREMIUM ACTIONS */}
                   <td className="p-4">
                     <div className="flex justify-center items-center gap-4">
-
                       {/* EDIT */}
                       <button
                         onClick={() => handleEdit(d)}
@@ -165,10 +160,8 @@ export default function SessionDatePage() {
                       >
                         Delete
                       </button>
-
                     </div>
                   </td>
-
                 </tr>
               ))
             )}
@@ -200,9 +193,7 @@ export default function SessionDatePage() {
                   <Label>Name</Label>
                   <Input
                     value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
 
@@ -221,9 +212,7 @@ export default function SessionDatePage() {
                   <Label>Status</Label>
                   <Switch
                     checked={form.active}
-                    onCheckedChange={(val) =>
-                      setForm({ ...form, active: val })
-                    }
+                    onCheckedChange={(val) => setForm({ ...form, active: val })}
                   />
                 </div>
 
