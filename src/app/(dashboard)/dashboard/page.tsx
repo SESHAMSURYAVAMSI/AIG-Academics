@@ -142,8 +142,13 @@ export default function Dashboard() {
                   key={event.id}
                   className="border-t hover:bg-gray-50 transition"
                 >
-                  <td className="p-4 font-medium">{event.name}</td>
-                  <td className="p-4">{event.location}</td>
+                  <td className="p-4 font-medium">
+                    {event.name}
+                    </td>
+
+                  <td className="p-4">
+                    {event.location}
+                    </td>
 
                   {/* ✅ CLEAN DATE */}
                   <td className="p-4">

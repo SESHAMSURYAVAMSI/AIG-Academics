@@ -219,7 +219,7 @@ export default function EventLayout({
           <SidebarItem
             label="Quiz"
             icon={HelpCircle}
-            active={isActive("quiz")}
+            active={pathname === `/dashboard/events/${id}/quiz`}
             onClick={() => router.push(`/dashboard/events/${id}/quiz`)}
           />
 
@@ -260,7 +260,7 @@ export default function EventLayout({
           <SidebarItem
             label="Push Message"
             icon={Bell}
-            active={isActive("push-message")}
+            active={pathname === `/dashboard/events/${id}/push-message`}
             onClick={() => router.push(`/dashboard/events/${id}/push-message`)}
           />
 
